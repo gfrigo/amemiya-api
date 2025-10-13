@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-from src.database import start_connection, start_cursor, insert
+from src.database import start_connection, start_cursor, insert, query_from_table
 
 env_path: Path = Path(".env")
 load_dotenv(env_path)
@@ -14,11 +14,11 @@ DB_SCHEMA: str | None = os.getenv("DB_SCHEMA")
 
 with start_connection(DB_HOST, DB_USER, DB_PASSWORD, DB_SCHEMA) as conn:
     with start_cursor(conn) as cursor:
-        #cursor.execute("SELECT * from test;")
 
-        insert(cursor, "test", ("name",), [("Gabriel3",), ("Fernando3",), ("Fernando4",)])
+
+
+        insert(cursor, "test", ("name",), [("Teste1",), ("Teste2",), ("Teste3",)])
         conn.commit()
 
-        #rows = cursor.fetchall()
-        #for row in rows:
-            #print(row)
+        result = query_from_table(cursor, "test", "*")
+        print(result)

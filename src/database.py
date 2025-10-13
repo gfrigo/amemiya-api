@@ -60,3 +60,30 @@ def insert(cursor, table: str, fields: tuple, values: list[tuple] | tuple) -> No
 
     elif isinstance(values, list):
         cursor.executemany(insert_stmt, values)
+
+def query_from_table(cursor, table: str, selection: str | tuple = "*", where: str | tuple = "", extra: str = ""):
+    if not table:
+        raise ValueError("No table has been provided.")
+
+    if isinstance(selection, tuple):
+        selection: str = ", ".join(selection)
+    elif isinstance(selection, str):
+        selection: str = selection
+
+    if where:
+        if isinstance(where, tuple):
+            where: str | None = " WHERE " + " AND ".join(where)
+
+        elif isinstance(where, str):
+            where: str | None = " WHERE " + where
+
+    query_stmt: str = f"SELECT {selection} FROM {table}{where}{extra};"
+
+    print(query_stmt)
+
+    cursor.execute(query_stmt)
+
+    return cursor.fetchall()
+
+def query_from_procedure():
+    ...
