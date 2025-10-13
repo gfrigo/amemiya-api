@@ -1,6 +1,7 @@
 import dotenv
 import logging
-from lib import getHash
+from lib import get_hash
 
-def getLoginAccess(user:str, password: str) -> bool:
+
+def get_login_access(user:str, password: str) -> bool:
     ...
