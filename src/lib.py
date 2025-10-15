@@ -10,3 +10,6 @@ def get_hash(data: str | bytes | int | float) -> str:
             data = str(data)
 
     return sha256(data.encode()).hexdigest()
+
+if __name__ == "__main__":
+    ...

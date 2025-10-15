@@ -16,17 +16,12 @@ DB_SCHEMA: str | None = os.getenv("DB_SCHEMA")
 with start_connection(DB_HOST, DB_USER, DB_PASSWORD, DB_SCHEMA) as conn:
     with start_cursor(conn) as cursor:
 
-        result = query_from_table(cursor, "Companies", "*")
-
-        cursor.execute("DESCRIBE Users;")
-        print(cursor.fetchall())
-
-        insert(cursor, 
+        '''insert(cursor, 
                "Users", 
                ("username","password", "email", "telephone", "roleId", "admin", "companyId"), 
                ("aaaa", get_hash("bbbb"), "cccc", "dddd", 0, 1, 1)
                )
-        conn.commit()
+        conn.commit()'''
 
         result = query_from_table(cursor, "Users", "*")
 

@@ -2,8 +2,8 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import logging
-from lib import get_hash
-from database import start_connection, start_cursor, query_from_table
+from src.lib import get_hash
+from src.database import start_connection, start_cursor, query_from_table
 
 env_path: Path = Path(".env")
 load_dotenv(env_path)
@@ -27,4 +27,3 @@ def get_login_access(user:str, password: str) -> bool:
             return True
         
     return False
-
