@@ -1,14 +1,21 @@
 import os
-from fastapi import FastAPI, HTTPException
+import logging
+from fastapi import FastAPI, responses
 from pydantic import BaseModel
-from src.lib import get_hash
 from dotenv import load_dotenv
 from pathlib import Path
 from src.database import start_connection, start_cursor, insert, query_from_table
-from src.login import get_login_access
+from src.login import get_access, get_user_data
+
+logger = logging.getLogger("uvicorn")
 
 env_path: Path = Path(".env")
 load_dotenv(env_path)
+
+DB_HOST: str = os.getenv("DB_HOST")
+DB_USER: str = os.getenv("DB_USER")
+DB_PASSWORD: str = os.getenv("DB_PASSWORD")
+DB_SCHEMA: str | None = os.getenv("DB_SCHEMA")
 
 app = FastAPI()
 
@@ -18,8 +25,20 @@ class LoginRequest(BaseModel):
 
 @app.post("/login")
 def login(request: LoginRequest):
-    access_granted = get_login_access(request.user, request.password)
-    if access_granted:
-        return {"detail": {"access": True}}
-    else:
-        raise HTTPException(status_code=401, detail={"access": False})
+    logger.info("LOGIN ROUTE HIT")
+    with start_connection(DB_HOST, DB_USER, DB_PASSWORD, DB_SCHEMA) as conn:
+        with start_cursor(conn) as cursor:
+
+            access = get_access(cursor, request.user, request.password)
+            logger.info(f"ACCESS: {access}")
+
+            user_data = get_user_data(cursor, access)
+            logger.info(f"USER DATA: {user_data}")
+
+            if user_data[0]:
+                return responses.JSONResponse(status_code=200, content={"detail": user_data[1]})
+
+            else:
+                return responses.JSONResponse(status_code=401, content={"detail": "Unauthorized"})
+
+

@@ -12,4 +12,4 @@ def get_hash(data: str | bytes | int | float) -> str:
     return sha256(data.encode()).hexdigest()
 
 if __name__ == "__main__":
-    ...
+    print(get_hash("senhaCerta"))
