@@ -5,7 +5,7 @@ fetch: dict = {
         "table": "Users",
         "selection": "*",
         "filter": {
-            "activeUser": ("activeUser = 1", )
+            "active_user": ("active_user = 1", )
         }
     },
     "vehicle": {
@@ -25,14 +25,22 @@ def assemble_fetch(type_fetch: str, mapping: dict, query_filter: str = ""):
 
     print(query_stmt)
 
-register: dict = {
+add: dict = {
     "user": {
         "table": "Users",
-        "fields": ("name", "innerRegister", "password", "email", "telephone", "roleId", "admin", "companyId", "imagePath", "activeUser")
+        "fields": ("name", "inner_register", "password", "email", "telephone", "role_id", "admin", "company_id", "image_path", "active_user")
     },
     "vehicle": {
         "table": ""
     }
 }
 
-
+edit: dict = {
+    "user": {
+        "table": "Users",
+        "fields": ("name", "inner_register", "password", "email", "telephone", "role_id", "admin", "company_id", "image_path", "active_user")
+    },
+    "vehicle": {
+        "table": ""
+    }
+}

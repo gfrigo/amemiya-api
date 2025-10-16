@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 from pathlib import Path
 from src.database import start_connection, start_cursor
 from src.login import get_access, get_user_data
+from src.register import Register
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("uvicorn")
 
 env_path: Path = Path(".env")
@@ -42,39 +44,73 @@ def login(request: LoginRequest):
                 return responses.JSONResponse(status_code=401, content={"detail": "Unauthorized"})
 
 
-class AddUserRequest(BaseModel):
+class UserDataRequest(BaseModel):
+    user_id: int | None = None
     name: str
-    innerRegister: str
-    password: str
+    inner_register: str
+    password: str | None = None
     email: str
     telephone: str
-    roleId: int
+    role_id: int
     admin: bool
-    companyId: int
-    imagePath: str | None = None
+    company_id: int
+    image_path: str | None = None
+    active_user: bool | None = None
 
-@app.post("/add_user")
-def add_user(request: AddUserRequest):
+@app.post("/user/add")
+def add_user(request: UserDataRequest):
     logger.info("ADD USER ROUTE HIT")
+
+    if not request.password:
+        return responses.JSONResponse(status_code=400, content={"detail": "Required field 'password' is missing"})
+
     with start_connection(DB_HOST, DB_USER, DB_PASSWORD, DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
             try:
-                from src.register import Register
                 Register.add(cursor, "user", (
                     request.name,
-                    request.innerRegister,
+                    request.inner_register,
                     request.password,
                     request.email,
                     request.telephone,
-                    str(request.roleId),
-                    '1' if request.admin else '0',
-                    str(request.companyId),
-                    request.imagePath if request.imagePath else 'assets/profiles/default.png',
+                    str(request.role_id),
+                    request.admin if request.admin else '0',
+                    str(request.company_id),
+                    request.image_path if request.image_path else 'assets/profiles/default.png',
                     '1'
                 ))
-                conn.commit()
+                #conn.commit()
                 logger.info("User added successfully")
                 return responses.JSONResponse(status_code=201, content={"detail": "User added successfully"})
+            except Exception as e:
+                logger.error(f"Error adding user: {e}")
+                return responses.JSONResponse(status_code=400, content={"detail": str(e)})
+
+@app.post("/user/edit")
+def edit_user(request: UserDataRequest):
+    logger.info("EDIT USER ROUTE HIT")
+
+    if not request.user_id:
+        return responses.JSONResponse(status_code=400, content={"detail": "Required field 'user_id' is missing"})
+
+    with start_connection(DB_HOST, DB_USER, DB_PASSWORD, DB_SCHEMA) as conn:
+        with start_cursor(conn) as cursor:
+            try:
+                Register.edit(cursor, "user", request.model_dump(), f"user_id = {request.user_id}", (
+                    request.name,
+                    request.inner_register,
+                    request.password if request.password else '',
+                    request.email,
+                    request.telephone,
+                    str(request.role_id),
+                    request.admin if request.admin else '0',
+                    str(request.company_id),
+                    request.image_path if request.image_path else 'assets/profiles/default.png',
+                    request.active_user if request.active_user else '1'
+                ))
+                conn.commit()
+                logger.info("User register edited successfully")
+                return responses.JSONResponse(status_code=201, content={"detail": "User register edited successfully"})
             except Exception as e:
                 logger.error(f"Error adding user: {e}")
                 return responses.JSONResponse(status_code=400, content={"detail": str(e)})
