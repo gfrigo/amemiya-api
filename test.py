@@ -16,6 +16,6 @@ DB_SCHEMA: str | None = os.getenv("DB_SCHEMA")
 
 with start_connection(DB_HOST, DB_USER, DB_PASSWORD, DB_SCHEMA) as conn:
     with start_cursor(conn) as cursor:
-        Register.add(cursor, ("TesteRegistro", "TR123", get_hash("senha123"), "teste2@example.com", "1234567890", "1", "0", "1", None, "1"))
+        Register.add(cursor, "user", ("TesteRegistro", "TR123", get_hash("senha123"), "teste3@example.com", "2345678901", "1", "0", "1"))
 
         conn.commit()

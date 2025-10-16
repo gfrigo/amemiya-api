@@ -42,3 +42,39 @@ def login(request: LoginRequest):
                 return responses.JSONResponse(status_code=401, content={"detail": "Unauthorized"})
 
 
+class AddUserRequest(BaseModel):
+    name: str
+    innerRegister: str
+    password: str
+    email: str
+    telephone: str
+    roleId: int
+    admin: bool
+    companyId: int
+    imagePath: str | None = None
+
+@app.post("/add_user")
+def add_user(request: AddUserRequest):
+    logger.info("ADD USER ROUTE HIT")
+    with start_connection(DB_HOST, DB_USER, DB_PASSWORD, DB_SCHEMA) as conn:
+        with start_cursor(conn) as cursor:
+            try:
+                from src.register import Register
+                Register.add(cursor, "user", (
+                    request.name,
+                    request.innerRegister,
+                    request.password,
+                    request.email,
+                    request.telephone,
+                    str(request.roleId),
+                    '1' if request.admin else '0',
+                    str(request.companyId),
+                    request.imagePath if request.imagePath else 'assets/profiles/default.png',
+                    '1'
+                ))
+                conn.commit()
+                logger.info("User added successfully")
+                return responses.JSONResponse(status_code=201, content={"detail": "User added successfully"})
+            except Exception as e:
+                logger.error(f"Error adding user: {e}")
+                return responses.JSONResponse(status_code=400, content={"detail": str(e)})
