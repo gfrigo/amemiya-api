@@ -148,3 +148,17 @@ def query_from_table(cursor, table: str, selection: str | tuple = "*", where: st
 
     return cursor.fetchall()
 
+class Insert:
+    @staticmethod
+    def from_string(cursor, insert_stmt: str, values: list[tuple] | tuple) -> None:
+        if not insert_stmt:
+            raise ValueError("No insert statement has been provided.")
+
+        if not isinstance(values, (tuple, list)) or not values:
+            raise ValueError("Values must be a non-empty tuple or list.")
+
+        if isinstance(values, tuple):
+            cursor.execute(insert_stmt, values)
+
+        elif isinstance(values, list):
+            cursor.executemany(insert_stmt, values)
