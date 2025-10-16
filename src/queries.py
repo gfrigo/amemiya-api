@@ -4,15 +4,15 @@ class User:
         return f"""
         SELECT
             u.name AS name, 
-            u.innerRegister AS innerRegister, 
+            u.inner_register AS inner_register, 
             u.email AS email, 
             u.telephone AS telephone, 
-            r.roleName AS roleName, 
+            r.role_name AS role_name, 
             u.admin AS admin, 
-            c.companyName,
-            u.imagePath
+            c.company_name,
+            u.image_path
         FROM Users u
-        LEFT JOIN Roles r ON r.roleId = u.roleId
-        LEFT JOIN Companies c ON c.companyId = u.companyId
-        WHERE u.id = {user_id};
+        LEFT JOIN Roles r ON r.role_id = u.role_id
+        LEFT JOIN Companies c ON c.company_id = u.company_id
+        WHERE u.user_id = {user_id};
         """

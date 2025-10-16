@@ -109,7 +109,7 @@ def update(cursor, table: str, fields: tuple, values: list[tuple] | tuple, where
 
     set_stmt = ", ".join([f"{field} = %s" for field in fields])
 
-    update_stmt = f"UPDATE {table} SET {set_stmt}{Statements.get_where(where)};"
+    update_stmt = f"UPDATE {table} SET {set_stmt}{Statements.get_where(where)}"
     print(update_stmt)
 
     if isinstance(values, tuple):

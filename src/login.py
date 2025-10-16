@@ -4,7 +4,7 @@ from src.database import query_from_table, query_from_string
 
 def query_users(cursor, only_active: bool = False) -> list[tuple] | None:
     if only_active:
-        users = query_from_table(cursor, "Users", "*", "activeUser = 1")
+        users = query_from_table(cursor, "Users", "*", "active_user = 1")
     else:
         users = query_from_table(cursor, "Users", "*")
     return users
