@@ -8,7 +8,7 @@ Tente enviar credenciais de login:
 
 bash: "curl -i -X POST "http://127.0.0.1:8000/login"   -H "Content-Type: application/json"   -d '{"user":"userTeste","password":"senhaCerta"}'"
 
-cmd: curl -i -X POST "http://127.0.0.1:8000/login" -H "Content-Type: application/json" -d "{\"user\":\"userTeste\",\"password\":\"senhaCerta\"}"
+cmd: curl -i -X POST "http://127.0.0.1:8000/login" -H "Content-Type: application/json" -d "{\\"user\\":\\"userTeste\\",\\"password\\":\\"senhaCerta\\"}"
 
 exemplo de resposta:
 

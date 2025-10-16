@@ -9,7 +9,15 @@ class Statements:
             return ""
 
         if isinstance(stmt, tuple):
-            return " WHERE " + " AND ".join(stmt)
+            if len(stmt) == 1:
+                if not stmt[0]:
+                    return ""
+
+                else:
+                    return " WHERE " + stmt[0]
+
+            else:
+                return " WHERE " + " AND ".join(stmt)
 
         elif isinstance(stmt, str):
             return " WHERE " + stmt
