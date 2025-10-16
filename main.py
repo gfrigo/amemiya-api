@@ -4,7 +4,7 @@ from fastapi import FastAPI, responses
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from pathlib import Path
-from src.database import start_connection, start_cursor, insert, query_from_table
+from src.database import start_connection, start_cursor
 from src.login import get_access, get_user_data
 
 logger = logging.getLogger("uvicorn")
