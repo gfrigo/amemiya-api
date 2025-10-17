@@ -46,7 +46,7 @@ def login(request: LoginRequest):
 
 class UserDataRequest(BaseModel):
     user_id: int | None = None
-    name: str
+    user_name: str
     inner_register: str
     password: str | None = None
     email: str
@@ -68,7 +68,7 @@ def add_user(request: UserDataRequest):
         with start_cursor(conn) as cursor:
             try:
                 Register.add(cursor, "user", (
-                    request.name,
+                    request.user_name,
                     request.inner_register,
                     request.password,
                     request.email,
@@ -97,9 +97,8 @@ def edit_user(request: UserDataRequest):
         with start_cursor(conn) as cursor:
             try:
                 Register.edit(cursor, "user", request.model_dump(), f"user_id = {request.user_id}", (
-                    request.name,
+                    request.user_name,
                     request.inner_register,
-                    request.password if request.password else '',
                     request.email,
                     request.telephone,
                     str(request.role_id),

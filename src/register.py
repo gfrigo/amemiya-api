@@ -11,7 +11,7 @@ def assemble_add(mapping: dict) :
 
 def assemble_edit(mapping: dict, data: dict, key: str):
 
-    fields = [field for field in mapping["fields"] if field in data]
+    fields = [field for field in mapping["fields"] if field in data and data[field] is not None]
 
     set_stmt = ", ".join([f"{field} = %s" for field in fields])
 
@@ -76,7 +76,7 @@ class Register:
         print(stmt)
         print(values)
 
-        #Insert.from_string(cursor, stmt, values)
+        Insert.from_string(cursor, stmt, values)
 
     @staticmethod
     def remove():
