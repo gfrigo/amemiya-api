@@ -4,26 +4,22 @@ Para Iniciar o servidor da Api:
 
 "uvicorn main:app --reload"
 
-Tente enviar credenciais de login:
+Envio de dados de login:
 
 bash: "curl -i -X POST "http://127.0.0.1:8000/login"   -H "Content-Type: application/json"   -d '{"user":"userTeste","password":"senhaCerta"}'"
 
-cmd: curl -i -X POST "http://127.0.0.1:8000/login" -H "Content-Type: application/json" -d "{\\"user\\":\\"userTeste\\",\\"password\\":\\"senhaCerta\\"}"
+cmd: curl -i -X POST "http://127.0.0.1:8000/login" -H "Content-Type: application/json" -d {\\"user\\":\\"userTeste\\",\\"password\\":\\"senhaCerta\\"}"
 
 exemplo de resposta:
 
 HTTP/1.1 200 OK
-\
 date: Wed, 15 Oct 2025 20:02:25 GMT
-\
 server: uvicorn
-\
 content-length: 222
-\
 content-type: application/json
 
 {
-    "detail":{
+    "detail": {
         "name": "userTeste",
         "inner_register": null,
         "email": "teste@example.com",
@@ -33,4 +29,22 @@ content-type: application/json
         "company": "root",
         "image_path": "assets/profiles/default.png"
     }
+}
+
+Envio de dados de edição de usuário:
+
+cmd:
+
+curl -i -X POST "http://127.0.0.1:8000/user/edit" -H "Content-Type: application/json" -d "{\\"user_id\\":1, \\"user_name\\":\\"Felipe Almeida\\",\\"inner_register\\":\\"1\\",\\"email\\":\\"flpalmeidac@gmail.com\\",\\"telephone\\":\\"11981272374\\",\\"role_id\\":1,\\"admin\\":false,\\"company_id\\":1,\\"image_path\\":\\"assets/felipe.png\\",\\"active_user\\":true}"
+
+exemplo de resposta:
+
+HTTP/1.1 201 Created
+date: Fri, 17 Oct 2025 17:06:41 GMT
+server: uvicorn
+content-length: 46
+content-type: application/json
+
+{
+    "detail": "User register edited successfully"
 }
