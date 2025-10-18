@@ -48,3 +48,24 @@ content-type: application/json
 {
     "detail": "User register edited successfully"
 }
+
+## Running the API
+
+- Install dependencies: pip install -r requirements.txt
+- Create a .env file with:
+  - DB_HOST=
+  - DB_USER=
+  - DB_PASSWORD=
+  - DB_SCHEMA=
+  - (optional) APP_NAME, APP_VERSION
+- Start server: uvicorn main:app --reload
+
+## Health Check
+
+- GET http://127.0.0.1:8000/health → {"status": "ok"}
+
+## Notes
+
+- Configuration is centralized in app/settings.py (loaded from .env).
+- Validation for required fields now returns HTTP 400 automatically when missing.
+- Class User_Endpoints was renamed to UserEndpoints for PEP8 compliance.

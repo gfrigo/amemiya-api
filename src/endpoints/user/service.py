@@ -1,0 +1,57 @@
+from src.core.database import start_connection, start_cursor
+from src.endpoints.user.repository import UserRepository
+from src.endpoints.user.schema import UserDataRequest
+from src.core.utils import check_missing_fields
+from src.core.config import settings
+
+def fetch_user_service(request: UserDataRequest) -> dict:
+    data = request.model_dump()
+    required_fields = ["user_id"]
+    check_missing_fields(data, required_fields)
+
+    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+        with start_cursor(conn) as cursor:
+            result: dict = UserRepository.fetch(cursor, data)
+            return result
+
+def add_user_service(request: UserDataRequest):
+    data = request.model_dump()
+    required_fields = ["user_name", "password", "email", "telephone", "role_id", "company_id"]
+    check_missing_fields(data, required_fields)
+
+    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+        with start_cursor(conn) as cursor:
+            UserRepository.add(cursor, data)
+            conn.commit()
+    return "User added successfully"
+
+
+def edit_user_service(request: UserDataRequest):
+    data = request.model_dump()
+    required_fields = ["user_id"]
+    check_missing_fields(data, required_fields)
+
+    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+        with start_cursor(conn) as cursor:
+            user_data: dict = UserRepository.fetch(cursor, data)
+            if not user_data:
+                return "user_id has no data"
+
+            UserRepository.edit(cursor, data)
+            conn.commit()
+    return "User edited successfully"
+
+def remove_user_service(request: UserDataRequest):
+    data = request.model_dump()
+    required_fields = ["user_id"]
+    check_missing_fields(data, required_fields)
+
+    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+        with start_cursor(conn) as cursor:
+            user_data: dict = UserRepository.fetch(cursor, data)
+            if not user_data:
+                return "user_id has no data"
+
+            UserRepository.remove(cursor, data)
+            conn.commit()
+    return "User removed successfully"
