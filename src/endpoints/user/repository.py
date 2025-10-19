@@ -1,3 +1,4 @@
+from src.core.logging_config import logger
 from src.register import Register
 
 
@@ -5,6 +6,7 @@ class UserRepository:
 
     @staticmethod
     def fetch(cursor, data: dict) -> dict | None:
+        logger.info("FETCH USER REPOSITORY HIT")
         user_id: int = data["user_id"]
 
         if not user_id:
@@ -37,6 +39,8 @@ class UserRepository:
 
     @staticmethod
     def add(cursor, data: dict):
+        logger.info("ADD USER REPOSITORY HIT")
+
         Register.add(cursor, "user", (
             data["user_name"],
             data["inner_register"],
@@ -52,9 +56,13 @@ class UserRepository:
 
     @staticmethod
     def edit(cursor, data: dict):
+        logger.info("EDIT USER REPOSITORY HIT")
+
         Register.edit(cursor, "user", data, f"user_id = {data['user_id']}")
 
     @staticmethod
     def remove(cursor, data: dict):
+        logger.info("REMOVE USER REPOSITORY HIT")
+
         Register.remove(cursor, "user", f"user_id = {data['user_id']}")
 

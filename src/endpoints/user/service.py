@@ -1,10 +1,13 @@
+from src.core.logging_config import logger
 from src.core.database import start_connection, start_cursor
 from src.endpoints.user.repository import UserRepository
 from src.endpoints.user.schema import UserDataRequest
 from src.core.utils import check_missing_fields
 from src.core.config import settings
 
-def fetch_user_service(request: UserDataRequest) -> dict:
+
+def fetch_user_service(request: UserDataRequest, conn = None, cursor = None) -> dict:
+    logger.info("FETCH USER SERVICE HIT")
     data = request.model_dump()
     required_fields = ["user_id"]
     check_missing_fields(data, required_fields)
@@ -14,7 +17,8 @@ def fetch_user_service(request: UserDataRequest) -> dict:
             result: dict = UserRepository.fetch(cursor, data)
             return result
 
-def add_user_service(request: UserDataRequest):
+def add_user_service(request: UserDataRequest, conn = None, cursor = None):
+    logger.info("ADD USER SERVICE HIT")
     data = request.model_dump()
     required_fields = ["user_name", "password", "email", "telephone", "role_id", "company_id"]
     check_missing_fields(data, required_fields)
@@ -25,8 +29,8 @@ def add_user_service(request: UserDataRequest):
             conn.commit()
     return "User added successfully"
 
-
-def edit_user_service(request: UserDataRequest):
+def edit_user_service(request: UserDataRequest, conn = None, cursor = None):
+    logger.info("EDIT USER SERVICE HIT")
     data = request.model_dump()
     required_fields = ["user_id"]
     check_missing_fields(data, required_fields)
@@ -41,7 +45,8 @@ def edit_user_service(request: UserDataRequest):
             conn.commit()
     return "User edited successfully"
 
-def remove_user_service(request: UserDataRequest):
+def remove_user_service(request: UserDataRequest, conn = None, cursor = None):
+    logger.info("REMOVE USER SERVICE HIT")
     data = request.model_dump()
     required_fields = ["user_id"]
     check_missing_fields(data, required_fields)

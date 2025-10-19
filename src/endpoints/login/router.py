@@ -11,7 +11,7 @@ router = APIRouter(prefix="/login", tags=["Login"])
 @router.post("/")
 def fetch_user(request: LoginDataRequest):
     """Authenticate and return login data."""
-    print("LOGIN ROUTE HIT")
+    logger.info("LOGIN ROUTE HIT")
     try:
         result = fetch_login_service(request)
         return {"detail": result}

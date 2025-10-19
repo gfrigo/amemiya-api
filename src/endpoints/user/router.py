@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from src.core.logging_config import logger
 from .schema import UserDataRequest
 from .service import fetch_user_service, add_user_service, edit_user_service, remove_user_service
 
@@ -6,6 +7,7 @@ router = APIRouter(prefix="/user", tags=["User"])
 
 @router.post("/fetch")
 def fetch_user(request: UserDataRequest):
+    logger.info("FETCH USER ROUTE HIT")
     try:
         result = fetch_user_service(request)
         return {"detail": result}
@@ -16,6 +18,7 @@ def fetch_user(request: UserDataRequest):
 
 @router.post("/add")
 def add_user(request: UserDataRequest):
+    logger.info("ADD USER ROUTE HIT")
     try:
         result = add_user_service(request)
         return {"detail": result}
@@ -26,6 +29,7 @@ def add_user(request: UserDataRequest):
 
 @router.post("/edit")
 def edit_user(request: UserDataRequest):
+    logger.info("EDIT USER ROUTE HIT")
     try:
         result = edit_user_service(request)
         return {"detail": result}
@@ -36,6 +40,7 @@ def edit_user(request: UserDataRequest):
 
 @router.post("/remove")
 def remove_user(request: UserDataRequest):
+    logger.info("REMOVE USER ROUTE HIT")
     try:
         result = remove_user_service(request)
         return {"detail": result}

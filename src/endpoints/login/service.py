@@ -4,7 +4,8 @@ from .schema import LoginDataRequest
 from src.core.config import settings
 from src.core.utils import check_missing_fields
 
-def fetch_login_service(request: LoginDataRequest) -> dict:
+
+def fetch_login_service(request: LoginDataRequest, conn = None, cursor = None) -> dict:
     data = request.model_dump()
     required_fields = ["user_name", "password"]
     check_missing_fields(data, required_fields)
