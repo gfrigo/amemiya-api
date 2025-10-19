@@ -1,12 +1,10 @@
 from fastapi import APIRouter
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("uvicorn")
+from main import logger
 
 router = APIRouter(prefix="/server", tags=["Server"])
 
 @router.get("/status")
 def server_status():
+    logger.info("SERVER ROUTE HIT")
     """Checks server status."""
     return {"status": "ok"}
