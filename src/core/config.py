@@ -5,6 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 class Settings(BaseSettings):
+    """Configuration for the application."""
     DB_HOST: str | None = None
     DB_USER: str | None = None
     DB_PASSWORD: str | None = None
