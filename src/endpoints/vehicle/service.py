@@ -80,7 +80,7 @@ def remove_vehicle_service(request: VehicleDataRequest):
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
-            vehicle_data: dict = VehicleRepository.fetch(cursor, data)
+            vehicle_data: dict = VehicleRepository.fetch(cursor, data, None)
             if not vehicle_data:
                 return "vehicle_id has no data"
 
