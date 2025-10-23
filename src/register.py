@@ -1,7 +1,7 @@
 from src.core.logging_config import logger
 from src.core.database import Execute, Statements
 from src.map import fetch, add, edit, remove
-from pypika import Field, Table, Query, Parameter
+from pypika import Field, Table, Query, Parameter, MySQLQuery
 
 
 def assemble_fetch(mapping: dict, filter_stmt: str | tuple | None = None) -> str:
@@ -25,7 +25,7 @@ def assemble_edit(mapping: dict, data: dict, key: str | tuple | None) -> tuple:
     logger.debug("Assemblying edit statement")
 
     table = Table(mapping["table"])
-    query = Query.update(table)
+    query = MySQLQuery.update(table)
 
     fields = [f for f in mapping["fields"] if f in data and data[f] is not None]
 
@@ -34,7 +34,7 @@ def assemble_edit(mapping: dict, data: dict, key: str | tuple | None) -> tuple:
 
     if key:
         if isinstance(key, str):
-            field, value = [x.strip() for x in key.split('=', 1)]
+            field, value = key.split(" = ")
             try:
                 value = int(value)
             except ValueError:
@@ -43,7 +43,7 @@ def assemble_edit(mapping: dict, data: dict, key: str | tuple | None) -> tuple:
 
         elif isinstance(key, tuple):
             for condition in key:
-                field, value = [x.strip() for x in condition.split('=', 1)]
+                field, value = condition.split(" = ")
                 try:
                     value = int(value)
                 except ValueError:
@@ -141,8 +141,8 @@ class Register:
 
         stmt, values = assemble_edit(mapping, data, key)
 
-        print(stmt)
-        print(values)
+        logger.info(f"Update statement: {stmt}")
+        logger.info(f"Value: {values}")
 
         Execute.Update.from_string(cursor, stmt, values)
 
