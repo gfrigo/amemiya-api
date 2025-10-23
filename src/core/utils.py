@@ -31,3 +31,4 @@ def check_missing_fields(data: dict, required_fields: list) -> None:
             status_code=400,
             detail=f"Request missing required field(s): {', '.join(missing)}"
         )
+

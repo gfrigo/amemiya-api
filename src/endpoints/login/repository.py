@@ -6,11 +6,11 @@ from src.queries import user_queries
 class LoginRepository:
 
     @staticmethod
-    def get_access(cursor, user: str, password: str) -> dict:
+    def get_access(cursor, email: str, password: str) -> dict:
         users_data = Register.fetch(cursor, "user", "active_user = 1")
 
         for user_entry in users_data:
-            if user_entry[1] == user and user_entry[3] == password:
+            if user_entry[4] == email and user_entry[3] == password:
                 return {"access": True, "user_id": user_entry[0]}
 
         return {"access": False, "user_id": None}
