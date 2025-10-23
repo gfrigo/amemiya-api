@@ -8,13 +8,13 @@ def assemble_fetch(mapping: dict, filter_stmt: str | tuple | None = None) -> str
     else:
         where_stmt: str = Statements.get_where(filter_stmt)
 
-    query_stmt: str = f"SELECT {mapping["selection"]} FROM {mapping["table"]}{where_stmt};"
+    query_stmt: str = f"SELECT {mapping['selection']} FROM {mapping['table']}{where_stmt};"
 
     return query_stmt
 
 def assemble_add(mapping: dict) -> tuple:
 
-        register_stmt: str = f"INSERT INTO {mapping["table"]} ({', '.join(mapping["fields"])}) VALUES ({', '.join(['%s'] * len(mapping["fields"]))})"
+        register_stmt: str = f"INSERT INTO {mapping['table']} ({', '.join(mapping['fields'])}) VALUES ({', '.join(['%s'] * len(mapping['fields']))})"
 
         return len(mapping["fields"]), register_stmt
 
