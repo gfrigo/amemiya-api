@@ -1,5 +1,8 @@
+from src.core.logging_config import logger
 from src.core.database import Execute, Statements
 from src.map import fetch, add, edit, remove
+from pypika import Field, Table, Query, Parameter
+
 
 def assemble_fetch(mapping: dict, filter_stmt: str | tuple | None = None) -> str:
 
@@ -18,16 +21,39 @@ def assemble_add(mapping: dict) -> tuple:
 
         return len(mapping["fields"]), register_stmt
 
-def assemble_edit(mapping: dict, data: dict, key: str) -> tuple:
+def assemble_edit(mapping: dict, data: dict, key: str | tuple | None) -> tuple:
+    logger.debug("Assemblying edit statement")
 
-    fields = [field for field in mapping["fields"] if field in data and data[field] is not None]
+    table = Table(mapping["table"])
+    query = Query.update(table)
 
-    set_stmt = ", ".join([f"{field} = %s" for field in fields])
-    update_stmt = f"UPDATE {mapping['table']} SET {set_stmt}{Statements.get_where(key)};"
+    fields = [f for f in mapping["fields"] if f in data and data[f] is not None]
 
-    values = tuple(data[field] for field in fields)
+    for f in fields:
+        query = query.set(table[f], Parameter('%s'))
 
-    return update_stmt, values
+    if key:
+        if isinstance(key, str):
+            field, value = [x.strip() for x in key.split('=', 1)]
+            try:
+                value = int(value)
+            except ValueError:
+                value = value.strip("'\"")
+            query = query.where(Field(field) == value)
+
+        elif isinstance(key, tuple):
+            for condition in key:
+                field, value = [x.strip() for x in condition.split('=', 1)]
+                try:
+                    value = int(value)
+                except ValueError:
+                    value = value.strip(r'\"')
+                query = query.where(Field(field) == value)
+
+    query_str = str(query) + ";"
+    values = tuple(data[f] for f in fields)
+
+    return query_str, values
 
 def assemble_remove(mapping: dict, key: str) -> str:
 

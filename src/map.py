@@ -27,7 +27,8 @@ edit: dict = {
         "fields": ("user_name", "inner_register", "password", "email", "telephone", "role_id", "admin", "company_id", "image_path", "active_user")
     },
     "vehicle": {
-        "table": ""
+        "table": "Vehicle",
+        "fields": ("name", "license_plate", "brand", "model", "year", "notes", "last_used", "last_user_id", "active")
     }
 }
 
