@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from src.core.logging_config import logger
-from .schema import VehicleDataRequest
+from .model import VehicleDataRequest
 from .service import fetch_vehicle_service, add_vehicle_service, edit_vehicle_service, remove_vehicle_service
 
 router = APIRouter(prefix="/vehicle", tags=["Vehicle"])

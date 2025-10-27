@@ -1,6 +1,6 @@
 from src.core.database import start_connection, start_cursor
 from .repository import LoginRepository
-from .schema import LoginDataRequest
+from .model import LoginDataRequest
 from src.core.config import settings
 from src.core.utils import check_missing_fields
 

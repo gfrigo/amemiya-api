@@ -6,15 +6,12 @@ from src.core.utils import check_missing_fields
 from src.core.config import settings
 
 
-def fetch_user_service(request: UserDataRequest, conn = None, cursor = None) -> dict:
-    logger.info("FETCH USER SERVICE HIT")
-    data = request.model_dump()
-    required_fields = ["user_id"]
-    check_missing_fields(data, required_fields)
+def fetch_attachment_service(company_id: int, user_id: int | None) -> dict:
+    logger.info("FETCH ATTACHMENT SERVICE HIT")
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
-            result: dict = UserRepository.fetch(cursor, data)
+            result: dict = AttachmentRepository.fetch(cursor, data)
             return result
 
 def add_user_service(request: UserDataRequest, conn = None, cursor = None):

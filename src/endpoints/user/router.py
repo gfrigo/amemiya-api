@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from src.core.logging_config import logger
-from .schema import UserDataRequest
+from .model import UserDataRequest
 from .service import fetch_user_service, add_user_service, edit_user_service, remove_user_service
 
 router = APIRouter(prefix="/user", tags=["User"])

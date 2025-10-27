@@ -1,7 +1,7 @@
 from src.core.logging_config import logger
 from src.core.database import start_connection, start_cursor
 from .repository import VehicleRepository
-from .schema import VehicleDataRequest
+from .model import VehicleDataRequest
 from src.core.utils import check_missing_fields
 from src.core.config import settings
 
