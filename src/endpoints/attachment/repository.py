@@ -1,37 +1,26 @@
+from .queries import get_data
 from src.core.logging_config import logger
 from src.register import Register
 
 
-class UserRepository:
+
+class AttachmentRepository:
 
     @staticmethod
-    def fetch(cursor, data: dict) -> dict | None:
-        logger.info("FETCH USER REPOSITORY HIT")
-        user_id: int = data["user_id"]
-
-        if not user_id:
-            return None
-
-        filter_stmt: str = f"user_id = {user_id}"
+    def fetch(cursor, query_filter: dict) -> dict | None:
+        logger.info("FETCH ATTACHMENT REPOSITORY HIT")
 
         try:
-            result: list = Register.fetch(cursor, "user", filter_stmt)[0]
+            select_stmt = get_data(query_filter)
 
-            print(result)
+            cursor.execute(select_stmt)
+            result = cursor.fetchall()
 
-            return {
-                "user_id": result[0],
-                "user_name": result[1],
-                "inner_register": result[2],
-                "password": result[3],
-                "email": result[4],
-                "telephone": result[5],
-                "role_id": result[6],
-                "admin": result[7],
-                "company_id": result[8],
-                "image_path": result[9],
-                "active_user": result[10]
-            }
+            if not result:
+                return None
+
+            # TODO
+            return {}
 
         except IndexError:
             return None
