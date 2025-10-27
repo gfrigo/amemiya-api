@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from .schema import LoginDataRequest
+from .model import LoginDataRequest
 from .service import fetch_login_service
 import logging
 
