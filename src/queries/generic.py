@@ -3,6 +3,9 @@ from functools import reduce
 from operator import and_
 
 def assemble_individual_condition(label, specs):
+    if not isinstance(specs, dict):
+        return None
+
     element_type = specs.get("type")
     element_value = specs.get("value")
     element_table = Table(specs.get("table"))
