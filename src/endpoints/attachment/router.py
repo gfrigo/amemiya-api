@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
 from src.core.logging_config import logger
 from .model import AttachmentDataRequest
-from .service import fetch_attachment_service, add_attachment_service, edit_user_service, remove_user_service
+from .service import fetch_attachment_service, add_attachment_service, edit_attachment_service, remove_attachment_service
 from datetime import datetime
 
 router = APIRouter(prefix="/attachment", tags=["Attachment"])
@@ -54,8 +54,8 @@ async def add_attachment(
     )
 
     try:
-        result = add_attachment_service(data)
-        return {"detail": "Attachment added successfully", "data": result}
+        add_attachment_service(data)
+        return {"detail": "Attachment added successfully"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -67,9 +67,8 @@ def edit_attachment(attachment_id: int, request: AttachmentDataRequest):
     """Passes the 'edit attachment' request to the service"""
     logger.info(f"EDIT ATTACHMENT ROUTE HIT: {attachment_id}")
     try:
-        ...
-        #result = edit_attachment_service(attachment_id, request)
-        #return {"detail": "Attachment edited successfully", "data": result}
+        edit_attachment_service(attachment_id, request)
+        return {"detail": "Attachment edited successfully"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -81,9 +80,8 @@ def remove_attachment(attachment_id: int):
     """Passes the 'remove attachment' request to the service"""
     logger.info("REMOVE ATTACHMENT ROUTE HIT")
     try:
-        ...
-        #result = remove_attachment_service(attachment_id)
-        #return {"detail": "Attachment removed successfully", "data": result}
+        remove_attachment_service(attachment_id)
+        return {"detail": "Attachment removed successfully"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

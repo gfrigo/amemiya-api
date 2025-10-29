@@ -4,9 +4,19 @@ from contextlib import contextmanager
 
 class Statements:
     @staticmethod
-    def get_where(stmt: str | tuple) -> str:
+    def get_where(stmt: str | tuple | dict) -> str:
         if not stmt:
             return ""
+
+        where = " WHERE "
+
+        if isinstance(stmt, dict):
+            elements: list = []
+            for k, v in stmt.items():
+                if not isinstance(v, dict):
+                    continue
+
+                elements.append(f"{k} = ")
 
         if isinstance(stmt, tuple):
             if len(stmt) == 1:
@@ -14,13 +24,13 @@ class Statements:
                     return ""
 
                 else:
-                    return " WHERE " + stmt[0]
+                    return where + stmt[0]
 
             else:
-                return " WHERE " + " AND ".join(stmt)
+                return where + " AND ".join(stmt)
 
         elif isinstance(stmt, str):
-            return " WHERE " + stmt
+            return where + stmt
 
         else:
             return ""

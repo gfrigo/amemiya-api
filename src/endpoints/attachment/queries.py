@@ -33,3 +33,10 @@ class AssembleStatement:
         stmt = f"INSERT INTO `Attachments` (`uploaded_by_company_id`, `uploaded_by_user_id`, `file_data`, `file_type`, `attachment_type`, `upload_date`) VALUES ({placeholders})"
 
         return stmt
+
+    @staticmethod
+    def edit_attachment(attachment_id, data: dict) -> str:
+        elements = [f"{key} = %s" for key, value in data.items() if value is not None]
+        stmt = f"UPDATE `Attachments` SET {", ".join(elements)} WHERE attachment_id = {attachment_id}"
+
+        return stmt

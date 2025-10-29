@@ -12,11 +12,9 @@ class AttachmentRepository:
 
         try:
             select_stmt = AssembleStatement.get_attachment_data(query_filter)
-
             logger.info(f"To execute: {select_stmt}")
 
             cursor.execute(select_stmt)
-
             logger.info("Executed")
 
             result = cursor.fetchall()
@@ -56,11 +54,9 @@ class AttachmentRepository:
         try:
 
             insert_stmt = AssembleStatement.add_attachment(data)
-
             logger.info(f"To execute: {insert_stmt}")
 
             cursor.execute(insert_stmt, tuple(data.values()))
-
             logger.info("Executed")
 
         except Exception as e:
@@ -68,13 +64,22 @@ class AttachmentRepository:
             return None
 
     @staticmethod
-    def edit(cursor, data: dict):
-        logger.info("EDIT USER REPOSITORY HIT")
+    def edit(cursor, attachment_id, data: dict):
+        logger.info("EDIT ATTACHMENT REPOSITORY HIT")
 
-        Register.edit(cursor, "user", data, f"user_id = {data['user_id']}")
+        try:
+            update_stmt = AssembleStatement.edit_attachment(attachment_id, data)
+            logger.info(f"To execute: {update_stmt}")
+
+            cursor.execute(update_stmt, tuple(v for v in data.values() if v is not None))
+            logger.info("Executed")
+
+        except Exception as e:
+            print(e)
+            return None
 
     @staticmethod
-    def remove(cursor, data: dict):
+    def remove(cursor, attachment_id: int):
         logger.info("REMOVE USER REPOSITORY HIT")
 
         Register.remove(cursor, "user", f"user_id = {data['user_id']}")
