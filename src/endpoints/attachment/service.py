@@ -34,15 +34,17 @@ def fetch_attachment_service(company_id: int,
 
             result: dict = AttachmentRepository.fetch(cursor, query_filter)
 
-            return result
+    return result
 
-def add_attachment_service(request: AttachmentDataRequest):
+def add_attachment_service(data):
     logger.info("ADD ATTACHMENT SERVICE HIT")
-    required_fields = ["user_name", "password", "email", "telephone", "role_id", "company_id"]
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
+
+            AttachmentRepository.add(cursor, data.dict())
             conn.commit()
+
     return "User added successfully"
 
 def edit_user_service(request: AttachmentDataRequest, conn = None, cursor = None):
