@@ -58,6 +58,8 @@ class UserRepository:
     def edit(cursor, data: dict):
         logger.info("EDIT USER REPOSITORY HIT")
 
+        print(data)
+
         Register.edit(cursor, "user", data, f"user_id = {data['user_id']}")
 
     @staticmethod

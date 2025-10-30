@@ -45,8 +45,8 @@ async def add_attachment(
     file_bytes: bytes = await file.read()
 
     data = AttachmentDataRequest(
-        company_id=company_id,
-        user_id=user_id,
+        uploaded_by_company_id=company_id,
+        uploaded_by_user_id=user_id,
         file_data=file_bytes,
         file_type=file_type,
         attachment_type=attachment_type,

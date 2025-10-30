@@ -22,12 +22,14 @@ def assemble_add(mapping: dict) -> tuple:
         return len(mapping["fields"]), register_stmt
 
 def assemble_edit(mapping: dict, data: dict, key: str | tuple | None) -> tuple:
-    logger.debug("Assemblying edit statement")
+    logger.info("ASSEMBLYING EDIT STATEMENT")
 
     table = Table(mapping["table"])
     query = MySQLQuery.update(table)
 
     fields = [f for f in mapping["fields"] if f in data and data[f] is not None]
+
+    print(fields)
 
     for f in fields:
         query = query.set(table[f], Parameter('%s'))

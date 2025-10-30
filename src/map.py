@@ -14,7 +14,7 @@ fetch: dict = {
 add: dict = {
     "user": {
         "table": "Users",
-        "fields": ("user_name", "inner_register", "password", "email", "telephone", "role_id", "admin", "company_id", "image_path", "active_user")
+        "fields": ("user_name", "inner_register", "password", "email", "telephone", "role_id", "admin", "company_id", "profile_picture_id", "active_user")
     },
     "vehicle": {
         "table": ""
@@ -24,7 +24,7 @@ add: dict = {
 edit: dict = {
     "user": {
         "table": "Users",
-        "fields": ("user_name", "inner_register", "password", "email", "telephone", "role_id", "admin", "company_id", "image_path", "active_user")
+        "fields": ("user_name", "inner_register", "password", "email", "telephone", "role_id", "admin", "company_id", "profile_picture_id", "active_user")
     },
     "vehicle": {
         "table": "Vehicle",
