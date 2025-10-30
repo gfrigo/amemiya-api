@@ -63,6 +63,8 @@ class AttachmentRepository:
             print(e)
             return None
 
+        return cursor.lastrowid
+
     @staticmethod
     def edit(cursor, attachment_id, data: dict):
         logger.info("EDIT ATTACHMENT REPOSITORY HIT")
@@ -80,7 +82,7 @@ class AttachmentRepository:
 
     @staticmethod
     def remove(cursor, attachment_id: int):
-        logger.info("REMOVE USER REPOSITORY HIT")
+        logger.info("REMOVE ATTACHMENT REPOSITORY HIT")
 
         Register.remove(cursor, "user", f"user_id = {data['user_id']}")
 

@@ -43,8 +43,10 @@ def add_attachment_service(data):
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
 
-            AttachmentRepository.add(cursor, data.dict())
+            attachment_id = AttachmentRepository.add(cursor, data.dict())
             conn.commit()
+
+    return attachment_id
 
 def edit_attachment_service(attachment_id: int, request: AttachmentDataRequest):
     logger.info("EDIT ATTACHMENT SERVICE HIT")

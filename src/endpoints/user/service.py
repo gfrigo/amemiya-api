@@ -27,13 +27,19 @@ def add_user_service(request: UserDataRequest, conn = None, cursor = None):
         with start_cursor(conn) as cursor:
             UserRepository.add(cursor, data)
             conn.commit()
+
     return "User added successfully"
 
-def edit_user_service(request: UserDataRequest, conn = None, cursor = None):
+def edit_user_service(request: UserDataRequest | dict, conn = None, cursor = None):
     logger.info("EDIT USER SERVICE HIT")
-    data = request.model_dump()
-    required_fields = ["user_id"]
-    check_missing_fields(data, required_fields)
+
+    if not isinstance(request, dict):
+        data = request.model_dump()
+        required_fields = ["user_id"]
+        check_missing_fields(data, required_fields)
+
+    else:
+        data = request
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
@@ -43,6 +49,7 @@ def edit_user_service(request: UserDataRequest, conn = None, cursor = None):
 
             UserRepository.edit(cursor, data)
             conn.commit()
+
     return "User edited successfully"
 
 def remove_user_service(request: UserDataRequest, conn = None, cursor = None):
