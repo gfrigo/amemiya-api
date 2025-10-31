@@ -29,7 +29,7 @@ class UserRepository:
                 "role_id": result[6],
                 "admin": result[7],
                 "company_id": result[8],
-                "image_path": result[9],
+                "profile_picture_id": result[9],
                 "active_user": result[10]
             }
 
@@ -50,7 +50,7 @@ class UserRepository:
             str(data["role_id"]),
             data["admin"] if data["admin"] else '0',
             str(data["company_id"]),
-            data["image_path"] or 'assets/profiles/default.png',
+            None,
             '1'
         ))
 

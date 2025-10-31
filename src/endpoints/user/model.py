@@ -10,5 +10,5 @@ class UserDataRequest(BaseModel):
     role_id: int | None = None
     admin: bool | None = None
     company_id: int | None = None
-    image: bytes | None = None
+    profile_picture_id: bytes | None = None
     active_user: bool | None = None
