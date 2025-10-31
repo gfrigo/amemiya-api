@@ -1,3 +1,19 @@
+# amemiya-api
+
+# Rodando a API
+
+Instale as dependências:
+>     pip install -r requirements.txt
+
+Preencha o arquivo `.env` com os dados de conexão do Banco de Dados:
+>     DB_HOST
+>     DB_USER
+>     DB_PASSWORD
+>     DB_SCHEMA
+
+Inicie o servidor:
+>     uvicorn main:app --reload
+
 # Referência da API
 
 Os endpoints funcionam com quatro métodos HTTP:
