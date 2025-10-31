@@ -42,7 +42,7 @@ def edit_user(request: UserDataRequest):
         raise HTTPException(status_code=500, detail=f"Internal server error {str(e)}")
 
 @router.put("/profile_picture/{user_id}", status_code=status.HTTP_201_CREATED)
-async def edit_user(user_id: int, company_id: int = Form(...), file_type: str = Form(...), file: UploadFile = File(...),):
+async def edit_user(user_id: int, company_id: int = Form(...), file_type: str = Form(...), file: UploadFile = File(...)):
     logger.info("ADD USER PROFILE PICTURE ROUTE HIT")
 
     file_bytes: bytes = await file.read()

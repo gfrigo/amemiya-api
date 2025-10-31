@@ -35,7 +35,7 @@ class LoginRepository:
                     "role_name": user_data[4],
                     "admin": user_data[5],
                     "company_name": user_data[6],
-                    "image_path": user_data[7]
+                    "profile_picture_id": user_data[7]
                 }
             }
 

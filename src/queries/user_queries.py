@@ -16,7 +16,7 @@ class User:
                 Roles.role_name,
                 Users.admin,
                 Companies.company_name,
-                Users.image_path
+                Users.profile_picture_id
             )
             .left_join(Roles).on(Roles.role_id == Users.role_id)
             .left_join(Companies).on(Companies.company_id == Users.company_id)
