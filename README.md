@@ -108,10 +108,10 @@ CMD:
 >     }
 
 #### /edit (POST json)  
-Modifica o registro de um usuário
+Modifica o registro de um usuário dados os campos a serem modificados
 
 **Parâmetros**:  
-`user_id`: *integer*
+`user_id`: *integer*  
 `user_name`: *string* (opcional)  
 `inner_register`: *string* (opcional)  
 `password`: *string* (opcional)  
