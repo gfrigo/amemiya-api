@@ -1,71 +1,198 @@
 # amemiya-api
 
-Para Iniciar o servidor da Api:
+# Rodando a API
 
-"uvicorn main:app --reload"
+Instale as dependências:
+>     pip install -r requirements.txt
 
-Envio de dados de login:
+Preencha o arquivo `.env` com os dados de conexão do Banco de Dados:
+>     DB_HOST
+>     DB_USER
+>     DB_PASSWORD
+>     DB_SCHEMA
 
-bash: "curl -i -X POST "http://127.0.0.1:8000/login"   -H "Content-Type: application/json"   -d '{"user":"userTeste","password":"senhaCerta"}'"
+Inicie o servidor:
+>     uvicorn main:app --reload
 
-cmd: curl -i -X POST "http://127.0.0.1:8000/login" -H "Content-Type: application/json" -d {\\"user\\":\\"userTeste\\",\\"password\\":\\"senhaCerta\\"}"
+# Referência da API
 
-exemplo de resposta:
+Os endpoints funcionam com quatro métodos HTTP:
 
-HTTP/1.1 200 OK
-date: Wed, 15 Oct 2025 20:02:25 GMT
-server: uvicorn
-content-length: 222
-content-type: application/json
+- **GET** para métodos de Busca / Consulta, como *query* de dados de um usuário;
+- **POST** para métodos de Inserção / Criação, como criação de veículos ou *upload* de uma nota;
+- **PUT** para métodos de Atualização / Alteração, como troca de foto de perfil ou alteração de dados de um usuário;
+- **DELETE** para métodos de Remoção de um registro, como deleção de um anexo.
 
-{
-    "detail": {
-        "name": "userTeste",
-        "inner_register": null,
-        "email": "teste@example.com",
-        "telephone": "0123456789", 
-        "role": "Função Teste",
-        "admin": 1,
-        "company": "root",
-        "image_path": "assets/profiles/default.png"
-    }
-}
+## Descrição de *endpoints*
 
-Envio de dados de edição de usuário:
 
-cmd:
 
-curl -i -X POST "http://127.0.0.1:8000/user/edit" -H "Content-Type: application/json" -d "{\\"user_id\\":1, \\"user_name\\":\\"Felipe Almeida\\",\\"inner_register\\":\\"1\\",\\"email\\":\\"flpalmeidac@gmail.com\\",\\"telephone\\":\\"11981272374\\",\\"role_id\\":1,\\"admin\\":false,\\"company_id\\":1,\\"image_path\\":\\"assets/felipe.png\\",\\"active_user\\":true}"
+### /user
 
-exemplo de resposta:
+**A ser retrabalhado**  
+*Endpoints* de usuário
 
-HTTP/1.1 201 Created
-date: Fri, 17 Oct 2025 17:06:41 GMT
-server: uvicorn
-content-length: 46
-content-type: application/json
+#### /fetch (POST json)  
+Consulta de dados de um usuário
 
-{
-    "detail": "User register edited successfully"
-}
+**Parâmetros**:  
+`user_id`: integer
 
-## Running the API
+**Chamada exemplo**:  
 
-- Install dependencies: pip install -r requirements.txt
-- Create a .env file with:
-  - DB_HOST=
-  - DB_USER=
-  - DB_PASSWORD=
-  - DB_SCHEMA=
-  - (optional) APP_NAME, APP_VERSION
-- Start server: uvicorn main:app --reload
+HTTP Client:
+>     POST http://localhost:8000/user/fetch
+>     Content-Type: application/json
+> 
+>     {
+>       "user_id": 30
+>     }
 
-## Health Check
+CMD:
+>     curl -X POST "http://localhost:8000/user/fetch" -H "Content-Type: application/json" -d "{\"user_id\": 30}"
+  
+**Resposta**:  
+>     {
+>       "detail": {
+>         "user_id":30,
+>         "user_name":"teste123",
+>         "inner_register":"1",
+>         "password":"teste123",
+>         "email":"teste2@example.com",
+>         "telephone":"2345678901",
+>         "role_id":1,
+>         "admin":0,
+>         "company_id":1,
+>         "profile_picture_id":1,
+>         "active_user":1
+>       }
+>     }
 
-- GET http://127.0.0.1:8000/health → {"status": "ok"}
+#### /add (POST json)  
+Adiciona registro de um usuário
 
-## Notes
+**Parâmetros**:  
+`user_name`: *string*  
+`inner_register`: *string* (opcional)  
+`password`: *string*  
+`email`: *string*  
+`telephone`: *string*  
+`role_id`: *integer*  
+`admin`: *boolean* (opcional, *default* False)  
+`company_id`: *integer*  
+`active_user`: *boolean* (opcional, *default* True)
 
-- Configuration is centralized in app/settings.py (loaded from .env).
-- Validation for required fields now returns HTTP 400 automatically when missing.
-- Class User_Endpoints was renamed to UserEndpoints for PEP8 compliance.
+**Chamada exemplo**:  
+
+HTTP Client:
+>     POST http://localhost:8000/user/add
+>     Content-Type: application/json
+> 
+>     {
+>       "user_name": "teste_add",
+>       "inner_register": "12a3bc",
+>       "password": "senhaTeste",
+>       "email": "teste_add@example.com",
+>       "telephone": "1234567890",
+>       "role_id": "1",
+>       "admin": "True",
+>       "company_id": "1"
+>     }
+
+CMD:
+>     curl -X POST "http://localhost:8000/user/add" -H "Content-Type: application/json" -d "{\"user_name\":\"teste_add\",\"inner_register\":\"12a3bc\",\"password\":\"senhaTeste\",\"email\":\"teste_add@example.com\",\"telephone\":\"1234567890\",\"role_id\":\"1\",\"admin\":\"True\",\"company_id\":\"1\"}"
+
+**Resposta**:  
+>     {
+>       "detail":"User added successfully"
+>     }
+
+#### /edit (POST json)  
+Modifica o registro de um usuário dados os campos a serem modificados
+
+**Parâmetros**:  
+`user_id`: *integer*  
+`user_name`: *string* (opcional)  
+`inner_register`: *string* (opcional)  
+`password`: *string* (opcional)  
+`email`: *string* (opcional)  
+`telephone`: *string* (opcional)  
+`role_id`: *integer* (opcional)  
+`admin`: *boolean* (opcional)  
+`company_id`: *integer* (opcional)  
+`active_user`: *boolean* (opcional)
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     POST http://localhost:8000/user/edit
+>     Content-Type: application/json
+> 
+>     {
+>       "user_id": "30",
+>       "user_name": "teste_edit",
+>       "telephone": "234567890",
+>       "admin": "False"
+>     }
+
+CMD:
+>     curl -X POST "http://localhost:8000/user/edit" -H "Content-Type: application/json" -d "{\"user_id\":\"30\",\"user_name\":\"teste_edit\",\"telephone\":\"234567890\",\"admin\":\"False\"}"
+
+**Resposta**:  
+>     {
+>       "detail":"User edited successfully"
+>     }
+
+#### /profile_picture/{user_id} (PUT form-data)  
+Adiciona a foto de perfil de um usuário
+
+**Parâmetros**:  
+`company_id`: *integer*  
+`user_id`: *integer*  
+`file_type`: *string*
+`file`: *file/binary* (arquivo como multipart/form-data)
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     PUT http://localhost:8000/user/profile_picture/30
+>     Content-Type: multipart/form-data
+> 
+>     {
+>       "company_id": "1",
+>       "file_type": "png",
+>       "file": "@teste_profile_picture.png"
+>     }
+
+CMD:
+>     curl -X PUT "http://localhost:8000/user/profile_picture/30" -F "company_id=1" -F "file_type=png" -F "file=@teste_profile_picture.png"
+
+**Resposta**:  
+>     {
+>       "detail":"User edited successfully"
+>     }
+ 
+#### /remove (POST json)  
+Remove o registro de um usuário
+**ATENÇÃO: Remover um registro remove as entries dependentes deste usuário em cascata, como todos os anexos adicionados.**
+
+**Parâmetros**:  
+`user_id`: *integer*
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     POST http://localhost:8000/user/remove
+>     Content-Type: application/json
+> 
+>     {
+>       "user_id": "30"
+>     }
+
+CMD:
+>     curl -X POST "http://localhost:8000/user/remove" -H "Content-Type: application/json" -d "{\"user_id\":\"30\"}"
+
+**Resposta**:  
+>     {
+>       "detail":"User removed successfully"
+>     }
