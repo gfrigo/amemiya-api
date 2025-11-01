@@ -1,5 +1,8 @@
 from src.core.logging_config import logger
 from src.register import Register
+from src.core.database import Execute
+from src.queries import user_queries
+from base64 import b64encode
 
 
 class UserRepository:
@@ -12,25 +15,27 @@ class UserRepository:
         if not user_id:
             return None
 
-        filter_stmt: str = f"user_id = {user_id}"
+        user_data = Execute.Select.from_string(cursor, user_queries.User.get_data(user_id))[0]
 
         try:
-            result: list = Register.fetch(cursor, "user", filter_stmt)[0]
 
-            print(result)
+            print(user_data)
+
+            user_id, user_name, inner_register, _, email, telephone, role_id, role_name, admin, company_id, company_name, picture_data, picture_type, active_user = user_data
+
+            encoded_picture_data = b64encode(picture_data).decode("utf-8")
 
             return {
-                "user_id": result[0],
-                "user_name": result[1],
-                "inner_register": result[2],
-                "password": result[3],
-                "email": result[4],
-                "telephone": result[5],
-                "role_id": result[6],
-                "admin": result[7],
-                "company_id": result[8],
-                "profile_picture_id": result[9],
-                "active_user": result[10]
+                "user_id": user_id,
+                "user_name": user_name,
+                "inner_register": inner_register,
+                "email": email,
+                "telephone": telephone,
+                "role_name": role_name,
+                "admin": True if admin == 1 else False,
+                "company_name": company_name,
+                "profile_picture": encoded_picture_data,
+                "active_user": active_user
             }
 
         except IndexError:

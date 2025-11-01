@@ -1,6 +1,7 @@
 from src.register import Register
 from src.core.database import Execute
 from src.queries import user_queries
+from base64 import b64encode
 
 
 class LoginRepository:
@@ -24,18 +25,26 @@ class LoginRepository:
 
         print(user_data)
 
+        user_id, user_name, inner_register, _,  email, telephone, role_id, role_name, admin, company_id, company_name, picture_data, picture_type, active_user = user_data
+
+        encoded_picture_data = b64encode(picture_data).decode("utf-8")
+
         if user_data:
+            if not active_user:
+                return {"access": False, "data": None}
+
             return {
                 "access": True,
                 "data": {
-                    "user_name": user_data[0],
-                    "inner_register": user_data[1],
-                    "email": user_data[2],
-                    "telephone": user_data[3],
-                    "role_name": user_data[4],
-                    "admin": user_data[5],
-                    "company_name": user_data[6],
-                    "profile_picture_id": user_data[7]
+                    "user_id": user_id,
+                    "user_name": user_name,
+                    "inner_register": inner_register,
+                    "email": email,
+                    "telephone": telephone,
+                    "role_name": role_name,
+                    "admin": True if admin == 1 else False,
+                    "company_name": company_name,
+                    "profile_picture": encoded_picture_data
                 }
             }
 
