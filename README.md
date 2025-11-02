@@ -34,7 +34,7 @@ Os endpoints funcionam com quatro métodos HTTP:
 | [/user/fetch](#fetch-post-json)                                          | POST | application/json    | Consulta de dados de um ou múltiplos usuário |
 | [/user/add](#add-post-json)                                              | POST | application/json    | Adiciona o registro de um usuário            | 
 | [/user/edit](#edit-post-json)                                            | POST | application/json    | Modifica o registro de um usuário            | 
-| [/user/profile_picture/{user_id}](#profile_pictureuser_id-put-form_data) | PUT  | multipart/form-data | Modifica a foto de perfil de um usuário      |
+| [/user/profile_picture/{user_id}](#profile_pictureuser_id-put-form-data) | PUT  | multipart/form-data | Modifica a foto de perfil de um usuário      |
 | [/user/remove](#edit-post-json)                                          | POST | application/json    | Remove o registro de um usuário              |
 
 ---
@@ -214,12 +214,12 @@ CMD:
 
 *Endpoints* de anexo
 
-| Endpoint                                                | Tipo   | Formato             | Descrição                                |
-|---------------------------------------------------------|--------|---------------------|------------------------------------------|
-| [/attachment/{company_id}](#company_id-get)             | GET    |                     | Consulta de dados um ou múltiplos anexos |
-| [/attachment/](#post-multipart-form-data)               | POST   | multipart/form-data | Adiciona registro de um anexo            | 
+| Endpoint                                              | Tipo   | Formato             | Descrição                                |
+|-------------------------------------------------------|--------|---------------------|------------------------------------------|
+| [/attachment/{company_id}](#company_id-get)           | GET    |                     | Consulta de dados um ou múltiplos anexos |
+| [/attachment/](#post-multipartform-data)              | POST   | multipart/form-data | Adiciona registro de um anexo            | 
 | [/attachment/{attachment_id} ](#attachment_id-put-json) | POST   | application/json    | Modifica o registro de um usuário        | 
-| [/attachment/{attachment_id](#attachment_id-delete)     | DELETE |                     | Remove o registro de um anexo            |
+| [/attachment/{attachment_id}](#attachment_id-delete)  | DELETE |                     | Remove o registro de um anexo            |
 
 ---
 
@@ -328,7 +328,7 @@ CMD:
 
 **Resposta**:  
 >     204 No Content
- 
+
 ### /{attachment_id} (DELETE)  
 Remove o registro de um anexo
 
