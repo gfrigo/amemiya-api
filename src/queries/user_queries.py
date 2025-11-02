@@ -7,7 +7,7 @@ Attachments = Table("Attachments")
 
 class User:
     @staticmethod
-    def get_data(user_id: int) -> str:
+    def get_data(company_id: int) -> str:
         query = (
             MySQLQuery.from_(Users).select(
                 Users.user_id,
@@ -28,7 +28,7 @@ class User:
             .left_join(Roles).on(Roles.role_id == Users.role_id)
             .left_join(Companies).on(Companies.company_id == Users.company_id)
             .left_join(Attachments).on(Attachments.attachment_id == Users.profile_picture_id)
-            .where(Users.user_id == user_id)
+            .where(Users.company_id == company_id)
         )
 
         print(str(query))
