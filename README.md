@@ -26,17 +26,17 @@ Os endpoints funcionam com quatro métodos HTTP:
 ## Descrição de *endpoints*
 
 
-
-### /user
+## /user
 
 **A ser retrabalhado**  
 *Endpoints* de usuário
 
 #### /fetch (POST json)  
-Consulta de dados de um usuário
+Consulta de dados de um ou múltiplos usuário
 
 **Parâmetros**:  
-`user_id`: integer
+`company_id`: *integer*    
+`user_id`: *integer* (opcional)
 
 **Chamada exemplo**:  
 
@@ -45,11 +45,12 @@ HTTP Client:
 >     Content-Type: application/json
 > 
 >     {
+>       "company_id": 1
 >       "user_id": 30
 >     }
 
 CMD:
->     curl -X POST "http://localhost:8000/user/fetch" -H "Content-Type: application/json" -d "{\"user_id\": 30}"
+>     curl -X POST "http://localhost:8000/user/fetch" -H "Content-Type: application/json" -d "{\"company_id\": 1, \"user_id\": 30}"
   
 **Resposta**:  
 >     {
@@ -196,3 +197,132 @@ CMD:
 >     {
 >       "detail":"User removed successfully"
 >     }
+
+
+
+## /attachment
+
+*Endpoints* de anexo
+
+#### /{company_id} (GET)  
+Consulta de dados um ou múltiplos anexos
+
+**Parâmetros**:  
+`company_id`: *int*  
+`user_id`: *int* (opcional)  
+`attachment_type`: *str* (opcional)  
+`date_range_start`: *str* (opcional)  
+`date_range_end`: *str* (opcional)
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     GET http://localhost:8000/attachment/123?user_id=45&attachment_type=image&date_range_start=2025-01-01&date_range_end=2025-12-31
+
+
+CMD:
+>     curl -X GET "http://localhost:8000/attachment/1?user_id=1&date_range_start=2025-09-01&date_range_end=2025-12-31"
+  
+**Resposta**:  
+>     {  
+>       "detail":{   
+>         "1":{  
+>           "company_name":"root",  
+>             "user_name":"Felipe Almeida de Carvalho",  
+>             "file_data":"...",  
+>             "file_type":"png",  
+>             "attachment_type":"profile_picture",  
+>             "upload_date":"2025-10-30T18:39:49"  
+>         }, "1":{  
+>             "company_name":"root",  
+>             "user_name":"Felipe Almeida de Carvalho",  
+>             "file_data":"...",  
+>             "file_type":"png",  
+>             "attachment_type":"profile_picture",  
+>             "upload_date":"2025-10-30T18:41:21"  
+>         }, "3":{  
+>             "company_name":"root",  
+>             "user_name":"Felipe Almeida de Carvalho",  
+>             "file_data":"...",  
+>             "file_type":"png",  
+>             "attachment_type":"profile_picture",  
+>             "upload_date":"2025-10-30T18:42:58"   
+>         }  
+>       }  
+>     }
+
+#### / (POST multipart/form-data)  
+Adiciona registro de um anexo
+
+**Parâmetros**:  
+`company_id`: *int* (form field)  
+`user_id`: *int* (form field)  
+`file`: *file* (binary, UploadFile)  
+`file_type`: *str* (form field)  
+`attachment_type`: *str* (form field)
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     POST http://localhost:8000/attachment/
+>     Content-Type: multipart/form-data
+>     
+>     company_id=1
+>     user_id=1
+>     file=@teste.png
+>     file_type=png
+>     attachment_type=nota_fiscal
+
+CMD:
+>     curl -X POST "http://localhost:8000/attachment/" -F "company_id=1" -F "user_id=1" -F "file=@teste.png" -F "file_type=png" -F "attachment_type=nota_fiscal"
+
+**Resposta**:  
+>     {
+>       "detail":"Attachment added successfully"
+>     }
+
+#### /{attachment_id} (PUT json)  
+Modifica o registro de um usuário dados os campos a serem modificados
+
+**Parâmetros**:  
+`attachment_id`: *integer*  
+`uploaded_by_company_id`: *integer* (opcional)  
+`uploaded_by_user_id`: *integer* (opcional)  
+`file_data`: *string* (opcional)  
+`file_type`: *string* (opcional)  
+`attachment_type`: *string* (opcional)  
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     PUT http://localhost:8000/attachment/7
+>     Content-Type: application/json
+> 
+>     {
+>       "uploaded_by_company_id": "1",
+>       "uploaded_by_user_id": "32",
+>       "attachment_type": "teste"
+>     }
+
+CMD:
+>     curl -X PUT "http://localhost:8000/attachment/7" -H "Content-Type: application/json" -d "{\"uploaded_by_company_id\":\"1\",\"uploaded_by_user_id\":\"32\",\"attachment_type\":\"teste\"}"
+
+**Resposta**:  
+>     204 No Content
+ 
+#### /{attachment_id} (DELETE)  
+Remove o registro de um anexo
+
+**Parâmetros**:  
+`attachment_id`: *integer*
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     DELETE http://localhost:8000/attachment/7
+
+CMD:
+>     curl -X DELETE "http://localhost:8000/attachment/7"
+
+**Resposta**:  
+>     204 No Content
