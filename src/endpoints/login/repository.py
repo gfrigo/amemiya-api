@@ -7,19 +7,19 @@ from base64 import b64encode
 class LoginRepository:
 
     @staticmethod
-    def get_access(cursor, email: str, password: str) -> dict:
+    def get_access(cursor, email: str, password: str) -> tuple:
         users_data = Register.fetch(cursor, "user", "active_user = 1")
 
         for user_entry in users_data:
             if user_entry[4] == email and user_entry[3] == password:
-                return {"access": True, "user_id": user_entry[0]}
+                return True, user_entry[0]  # access, user_id
 
-        return {"access": False, "user_id": None}
+        return False, None
 
     @staticmethod
-    def get_user_data(cursor, user_id) -> dict:
+    def get_user_data(cursor, user_id) -> tuple:
         if not user_id:
-            return {"access": False, "data": None}
+            return False, None
 
         user_data = Execute.Select.from_string(cursor, user_queries.User.get_data(user_id))[0]
 
@@ -31,11 +31,10 @@ class LoginRepository:
 
         if user_data:
             if not active_user:
-                return {"access": False, "data": None}
+                return False, None
 
-            return {
-                "access": True,
-                "data": {
+            return (True,
+                 {
                     "user_id": user_id,
                     "user_name": user_name,
                     "inner_register": inner_register,
@@ -46,6 +45,6 @@ class LoginRepository:
                     "company_name": company_name,
                     "profile_picture": encoded_picture_data
                 }
-            }
+            )
 
-        return {"access": False, "data": None}
+        return False, None
