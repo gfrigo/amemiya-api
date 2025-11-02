@@ -199,10 +199,6 @@ CMD:
 
 ---
 
-[<-](#user)
-
----
-
 [<-](#endpoints-de-usuário)
 
 ### /remove (POST json)  
