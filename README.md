@@ -23,20 +23,23 @@ Os endpoints funcionam com quatro métodos HTTP:
 - **PUT** para métodos de Atualização / Alteração, como troca de foto de perfil ou alteração de dados de um usuário;
 - **DELETE** para métodos de Remoção de um registro, como deleção de um anexo.
 
-## Descrição de *endpoints*
+---
 
-## /user
+## *Endpoints* de usuário
 
 **A ser retrabalhado**  
-*Endpoints* de usuário
 
-### Endpoints
-- [Fetch user](#post-userfetch)
-- [Add user](#post-useradd)
+| Endpoint                                                                 | Tipo | Formato             | Descrição                                    |
+|--------------------------------------------------------------------------|------|---------------------|----------------------------------------------|
+| [/user/fetch](#fetch-post-json)                                          | POST | application/json    | Consulta de dados de um ou múltiplos usuário |
+| [/user/add](#add-post-json)                                              | POST | application/json    | Adiciona o registro de um usuário            | 
+| [/user/edit](#edit-post-json)                                            | POST | application/json    | Modifica o registro de um usuário            | 
+| [/user/profile_picture/{user_id}](#profile_pictureuser_id-put-form_data) | PUT  | multipart/form-data | Modifica a foto de perfil de um usuário      |
+| [/user/remove](#edit-post-json)                                          | POST | application/json    | Remove o registro de um usuário              |
 
 ---
 
-### POST /user/fetch 
+### /fetch (POST json)  
 Consulta de dados de um ou múltiplos usuário
 
 **Parâmetros**:  
@@ -74,10 +77,8 @@ CMD:
 >       }
 >     }
 
-
-
 ### /add (POST json)  
-Adiciona registro de um usuário
+Adiciona o registro de um usuário
 
 **Parâmetros**:  
 `user_name`: *string*  
@@ -179,7 +180,7 @@ CMD:
 >     {
 >       "detail":"User edited successfully"
 >     }
- 
+
 ### /remove (POST json)  
 Remove o registro de um usuário
 **ATENÇÃO: Remover um registro remove as entries dependentes deste usuário em cascata, como todos os anexos adicionados.**
@@ -207,9 +208,20 @@ CMD:
 
 ***
 
+---
+
 ## /attachment
 
 *Endpoints* de anexo
+
+| Endpoint                                                | Tipo   | Formato             | Descrição                                |
+|---------------------------------------------------------|--------|---------------------|------------------------------------------|
+| [/attachment/{company_id}](#company_id-get)             | GET    |                     | Consulta de dados um ou múltiplos anexos |
+| [/attachment/](#post-multipart-form-data)               | POST   | multipart/form-data | Adiciona registro de um anexo            | 
+| [/attachment/{attachment_id} ](#attachment_id-put-json) | POST   | application/json    | Modifica o registro de um usuário        | 
+| [/attachment/{attachment_id](#attachment_id-delete)     | DELETE |                     | Remove o registro de um anexo            |
+
+---
 
 ### /{company_id} (GET)  
 Consulta de dados um ou múltiplos anexos
@@ -289,7 +301,7 @@ CMD:
 >     }
 
 ### /{attachment_id} (PUT json)  
-Modifica o registro de um usuário dados os campos a serem modificados
+Modifica o registro de um anexo dados os campos a serem modificados
 
 **Parâmetros**:  
 `attachment_id`: *integer*  
