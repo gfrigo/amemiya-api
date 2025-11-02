@@ -25,13 +25,18 @@ Os endpoints funcionam com quatro métodos HTTP:
 
 ## Descrição de *endpoints*
 
-
 ## /user
 
 **A ser retrabalhado**  
 *Endpoints* de usuário
 
-#### /fetch (POST json)  
+### Endpoints
+- [Fetch user](#post-userfetch)
+- [Add user](#post-useradd)
+
+---
+
+### POST /user/fetch 
 Consulta de dados de um ou múltiplos usuário
 
 **Parâmetros**:  
@@ -69,7 +74,9 @@ CMD:
 >       }
 >     }
 
-#### /add (POST json)  
+
+
+### /add (POST json)  
 Adiciona registro de um usuário
 
 **Parâmetros**:  
@@ -108,7 +115,7 @@ CMD:
 >       "detail":"User added successfully"
 >     }
 
-#### /edit (POST json)  
+### /edit (POST json)  
 Modifica o registro de um usuário dados os campos a serem modificados
 
 **Parâmetros**:  
@@ -144,7 +151,7 @@ CMD:
 >       "detail":"User edited successfully"
 >     }
 
-#### /profile_picture/{user_id} (PUT form-data)  
+### /profile_picture/{user_id} (PUT form-data)  
 Adiciona a foto de perfil de um usuário
 
 **Parâmetros**:  
@@ -173,7 +180,7 @@ CMD:
 >       "detail":"User edited successfully"
 >     }
  
-#### /remove (POST json)  
+### /remove (POST json)  
 Remove o registro de um usuário
 **ATENÇÃO: Remover um registro remove as entries dependentes deste usuário em cascata, como todos os anexos adicionados.**
 
@@ -198,13 +205,13 @@ CMD:
 >       "detail":"User removed successfully"
 >     }
 
-
+***
 
 ## /attachment
 
 *Endpoints* de anexo
 
-#### /{company_id} (GET)  
+### /{company_id} (GET)  
 Consulta de dados um ou múltiplos anexos
 
 **Parâmetros**:  
@@ -251,7 +258,7 @@ CMD:
 >       }  
 >     }
 
-#### / (POST multipart/form-data)  
+### / (POST multipart/form-data)  
 Adiciona registro de um anexo
 
 **Parâmetros**:  
@@ -281,7 +288,7 @@ CMD:
 >       "detail":"Attachment added successfully"
 >     }
 
-#### /{attachment_id} (PUT json)  
+### /{attachment_id} (PUT json)  
 Modifica o registro de um usuário dados os campos a serem modificados
 
 **Parâmetros**:  
@@ -310,7 +317,7 @@ CMD:
 **Resposta**:  
 >     204 No Content
  
-#### /{attachment_id} (DELETE)  
+### /{attachment_id} (DELETE)  
 Remove o registro de um anexo
 
 **Parâmetros**:  
