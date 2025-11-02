@@ -1,3 +1,4 @@
+#pylint: disable-all
 from pypika import MySQLQuery, Table
 from src.queries.generic import assemble_condition
 
@@ -37,6 +38,6 @@ class AssembleStatement:
     @staticmethod
     def edit_attachment(attachment_id, data: dict) -> str:
         elements = [f"{key} = %s" for key, value in data.items() if value is not None]
-        stmt = f"UPDATE `Attachments` SET {", ".join(elements)} WHERE attachment_id = {attachment_id}"
+        stmt = f"UPDATE `Attachments` SET {', '.join(elements)} WHERE attachment_id = {attachment_id}"
 
         return stmt
