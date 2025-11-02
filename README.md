@@ -14,6 +14,8 @@ Preencha o arquivo `.env` com os dados de conexão do Banco de Dados:
 Inicie o servidor:
 >     uvicorn main:app --reload
 
+---
+
 # Referência da API
 
 Os endpoints funcionam com quatro métodos HTTP:
@@ -38,6 +40,8 @@ Os endpoints funcionam com quatro métodos HTTP:
 | [/user/remove](#edit-post-json)                                          | POST | application/json    | Remove o registro de um usuário              |
 
 ---
+
+[<-](#endpoints-de-usuário)
 
 ### /fetch (POST json)  
 Consulta de dados de um ou múltiplos usuário
@@ -76,6 +80,10 @@ CMD:
 >         "active_user":1
 >       }
 >     }
+
+---
+
+[<-](#endpoints-de-usuário)
 
 ### /add (POST json)  
 Adiciona o registro de um usuário
@@ -116,6 +124,10 @@ CMD:
 >       "detail":"User added successfully"
 >     }
 
+---
+
+[<-](#endpoints-de-usuário)
+
 ### /edit (POST json)  
 Modifica o registro de um usuário dados os campos a serem modificados
 
@@ -152,6 +164,10 @@ CMD:
 >       "detail":"User edited successfully"
 >     }
 
+---
+
+[<-](#endpoints-de-usuário)
+
 ### /profile_picture/{user_id} (PUT form-data)  
 Adiciona a foto de perfil de um usuário
 
@@ -180,6 +196,14 @@ CMD:
 >     {
 >       "detail":"User edited successfully"
 >     }
+
+---
+
+[<-](#user)
+
+---
+
+[<-](#endpoints-de-usuário)
 
 ### /remove (POST json)  
 Remove o registro de um usuário
@@ -210,9 +234,7 @@ CMD:
 
 ---
 
-## /attachment
-
-*Endpoints* de anexo
+## *Endpoints* de anexo
 
 | Endpoint                                                | Tipo   | Formato             | Descrição                                |
 |---------------------------------------------------------|--------|---------------------|------------------------------------------|
@@ -222,6 +244,8 @@ CMD:
 | [/attachment/{attachment_id}](#attachment_id-delete)    | DELETE |                     | Remove o registro de um anexo            |
 
 ---
+
+[<-](#endpoints-de-anexo)
 
 ### /{company_id} (GET)  
 Consulta de dados um ou múltiplos anexos
@@ -270,6 +294,10 @@ CMD:
 >       }  
 >     }
 
+---
+
+[<-](#endpoints-de-anexo)
+
 ### / (POST multipart/form-data)  
 Adiciona registro de um anexo
 
@@ -300,6 +328,12 @@ CMD:
 >       "detail":"Attachment added successfully"
 >     }
 
+---
+
+---
+
+[<-](#endpoints-de-anexo)
+
 ### /{attachment_id} (PUT json)  
 Modifica o registro de um anexo dados os campos a serem modificados
 
@@ -328,6 +362,10 @@ CMD:
 
 **Resposta**:  
 >     204 No Content
+
+---
+
+[<-](#endpoints-de-anexo)
 
 ### /{attachment_id} (DELETE)  
 Remove o registro de um anexo
