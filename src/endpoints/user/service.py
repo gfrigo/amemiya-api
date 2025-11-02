@@ -6,10 +6,10 @@ from src.core.utils import check_missing_fields
 from src.core.config import settings
 
 
-def fetch_user_service(request: UserDataRequest, conn = None, cursor = None) -> dict:
+def fetch_user_service(request: UserDataRequest) -> dict:
     logger.info("FETCH USER SERVICE HIT")
     data = request.model_dump()
-    required_fields = ["user_id"]
+    required_fields = ["company_id"]
     check_missing_fields(data, required_fields)
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
