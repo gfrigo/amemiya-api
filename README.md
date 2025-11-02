@@ -214,12 +214,12 @@ CMD:
 
 *Endpoints* de anexo
 
-| Endpoint                                              | Tipo   | Formato             | Descrição                                |
-|-------------------------------------------------------|--------|---------------------|------------------------------------------|
-| [/attachment/{company_id}](#company_id-get)           | GET    |                     | Consulta de dados um ou múltiplos anexos |
-| [/attachment/](#post-multipartform-data)              | POST   | multipart/form-data | Adiciona registro de um anexo            | 
+| Endpoint                                                | Tipo   | Formato             | Descrição                                |
+|---------------------------------------------------------|--------|---------------------|------------------------------------------|
+| [/attachment/{company_id}](#company_id-get)             | GET    |                     | Consulta de dados um ou múltiplos anexos |
+| [/attachment/](#-post-multipartform-data)               | POST   | multipart/form-data | Adiciona registro de um anexo            | 
 | [/attachment/{attachment_id} ](#attachment_id-put-json) | POST   | application/json    | Modifica o registro de um usuário        | 
-| [/attachment/{attachment_id}](#attachment_id-delete)  | DELETE |                     | Remove o registro de um anexo            |
+| [/attachment/{attachment_id}](#attachment_id-delete)    | DELETE |                     | Remove o registro de um anexo            |
 
 ---
 
