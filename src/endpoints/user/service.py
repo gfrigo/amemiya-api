@@ -15,6 +15,7 @@ def fetch_user_service(request: UserDataRequest) -> dict:
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
             result: dict = UserRepository.fetch(cursor, data)
+
             return result
 
 def add_user_service(request: UserDataRequest, conn = None, cursor = None):

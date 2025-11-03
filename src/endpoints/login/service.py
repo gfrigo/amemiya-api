@@ -14,7 +14,8 @@ def fetch_login_service(request: LoginDataRequest, conn = None, cursor = None) -
         with start_cursor(conn) as cursor:
 
             access = LoginRepository.get_access(cursor, data["email"], data["password"])
-            user_data = LoginRepository.get_user_data(cursor, access[1])
+            user_id = access[0]
+            user_data = LoginRepository.get_user_data(cursor, user_id)
 
             return user_data
 

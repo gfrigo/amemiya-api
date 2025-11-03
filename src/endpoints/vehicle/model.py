@@ -11,4 +11,4 @@ class VehicleDataRequest(BaseModel):
     notes: str | None = None
     last_used: str | None = None
     last_user_id: int | None = None
-    active: bool | None = None
+    active_vehicle: bool | None = None
