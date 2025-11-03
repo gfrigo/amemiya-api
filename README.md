@@ -474,8 +474,8 @@ CMD:
 |-------------------------------------------|------|-----------------------|---------------------|-----------------------------------------------|
 | [/vehicle/fetch](#vehiclefetch-post-json) | POST | application/json      | json                | Consulta de dados de um ou múltiplos veículos |
 | [/vehicle/add](#add-post-json)            | POST | application/json      | json                | Adiciona o registro de um veículo             | 
-| [/vehicle/edit](#edit-post-json)          | POST | application/json      |                     | Modifica o registro de um veículo             | 
-| [/vehicle/remove](#edit-post-json)        | POST | application/json      |                     | Remove o registro de um veículo               |
+| [/vehicle/edit](#edit-post-json)          | POST | application/json      | json                | Modifica o registro de um veículo             | 
+| [/vehicle/remove](#edit-post-json)        | POST | application/json      | json                | Remove o registro de um veículo               |
 
 ---
 
