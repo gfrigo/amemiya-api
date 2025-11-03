@@ -236,7 +236,7 @@ CMD:
 |---------------------------------------------------------|--------|---------------------|------------------------------------------|
 | [/attachment/{company_id}](#company_id-get)             | GET    |                     | Consulta de dados um ou múltiplos anexos |
 | [/attachment/](#-post-multipartform-data)               | POST   | multipart/form-data | Adiciona registro de um anexo            | 
-| [/attachment/{attachment_id} ](#attachment_id-put-json) | POST   | application/json    | Modifica o registro de um usuário        | 
+| [/attachment/{attachment_id} ](#attachment_id-put-json) | PUT    | application/json    | Modifica o registro de um usuário        | 
 | [/attachment/{attachment_id}](#attachment_id-delete)    | DELETE |                     | Remove o registro de um anexo            |
 
 ---
@@ -382,7 +382,7 @@ CMD:
 
 ---
 
-## *Endpoints* de Login
+## *Endpoints* de login
 
 **A ser retrabalhado**  
 
@@ -435,7 +435,7 @@ CMD:
 
 ---
 
-## *Endpoints* de Servidor
+## *Endpoints* de servidor
 
 | Endpoint                           | Tipo | Formato | Formato da Resposta | Descrição                     |
 |------------------------------------|------|---------|---------------------|-------------------------------|
