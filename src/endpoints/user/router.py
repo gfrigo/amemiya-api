@@ -1,4 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
+from fastapi.responses import Response, JSONResponse
 from src.core.logging_config import logger
 from .model import UserDataRequest
 from .service import fetch_user_service, add_user_service, edit_user_service, remove_user_service
@@ -13,7 +14,11 @@ def fetch_user(request: UserDataRequest):
     logger.info("FETCH USER ROUTE HIT")
     try:
         result = fetch_user_service(request)
-        return {"detail": result}
+
+        if result:
+            return JSONResponse(status_code=status.HTTP_200_OK, content=result)
+
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

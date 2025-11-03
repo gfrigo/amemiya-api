@@ -19,7 +19,8 @@ class UserRepository:
         users_data = Execute.Select.from_string(cursor, user_queries.User.get_data(company_id))
 
         if user_id:
-            user_data = (x for x in users_data if x[0] == user_id)
+
+            user_data = [user_entry for user_entry in users_data if user_entry[0] == user_id][0]
 
             try:
 
@@ -43,6 +44,9 @@ class UserRepository:
                 }
 
             except IndexError:
+                return None
+
+            except ValueError:
                 return None
 
         else:

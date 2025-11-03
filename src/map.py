@@ -28,7 +28,7 @@ edit: dict = {
     },
     "vehicle": {
         "table": "Vehicle",
-        "fields": ("name", "license_plate", "brand", "model", "year", "notes", "last_used", "last_user_id", "active")
+        "fields": ("name", "license_plate", "brand", "model", "year", "notes", "last_used", "last_user_id", "active_vehicle")
     }
 }
 

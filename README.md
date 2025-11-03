@@ -31,13 +31,13 @@ Os endpoints funcionam com quatro métodos HTTP:
 
 **A ser retrabalhado**  
 
-| Endpoint                                                                 | Tipo | Formato             | Descrição                                    |
-|--------------------------------------------------------------------------|------|---------------------|----------------------------------------------|
-| [/user/fetch](#fetch-post-json)                                          | POST | application/json    | Consulta de dados de um ou múltiplos usuário |
-| [/user/add](#add-post-json)                                              | POST | application/json    | Adiciona o registro de um usuário            | 
-| [/user/edit](#edit-post-json)                                            | POST | application/json    | Modifica o registro de um usuário            | 
-| [/user/profile_picture/{user_id}](#profile_pictureuser_id-put-form-data) | PUT  | multipart/form-data | Modifica a foto de perfil de um usuário      |
-| [/user/remove](#edit-post-json)                                          | POST | application/json    | Remove o registro de um usuário              |
+| Endpoint                                                                 | Tipo | Formato             | Formato da Resposta | Descrição                                    |
+|--------------------------------------------------------------------------|------|---------------------|---------------------|----------------------------------------------|
+| [/user/fetch](#fetch-post-json)                                          | POST | application/json    |                     | Consulta de dados de um ou múltiplos usuário |
+| [/user/add](#add-post-json)                                              | POST | application/json    |                     | Adiciona o registro de um usuário            | 
+| [/user/edit](#edit-post-json)                                            | POST | application/json    |                     | Modifica o registro de um usuário            | 
+| [/user/profile_picture/{user_id}](#profile_pictureuser_id-put-form-data) | PUT  | multipart/form-data |                     | Modifica a foto de perfil de um usuário      |
+| [/user/remove](#edit-post-json)                                          | POST | application/json    |                     | Remove o registro de um usuário              |
 
 ---
 
@@ -57,7 +57,7 @@ HTTP Client:
 >     Content-Type: application/json
 > 
 >     {
->       "company_id": 1
+>       "company_id": 1,
 >       "user_id": 30
 >     }
 
@@ -65,6 +65,8 @@ CMD:
 >     curl -X POST "http://localhost:8000/user/fetch" -H "Content-Type: application/json" -d "{\"company_id\": 1, \"user_id\": 30}"
   
 **Resposta**:  
+>     200 OK
+> 
 >     {
 >       "detail": {
 >         "user_id":30,
@@ -226,8 +228,6 @@ CMD:
 >       "detail":"User removed successfully"
 >     }
 
-***
-
 ---
 
 ## *Endpoints* de anexo
@@ -379,3 +379,253 @@ CMD:
 
 **Resposta**:  
 >     204 No Content
+
+---
+
+## *Endpoints* de Login
+
+**A ser retrabalhado**  
+
+| Endpoint                    | Tipo | Formato             | Descrição                                 |
+|-----------------------------|------|---------------------|-------------------------------------------|
+| [/login/](#fetch-post-json) | POST | application/json    | Recebe dados de login e verifica o acesso |
+
+---
+
+[<-](#endpoints-de-login)
+
+### / (POST json)  
+Verifica o acesso das credenciais de login
+
+**Parâmetros**:  
+`email`: *string*    
+`password`: *string*
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     POST http://localhost:8000/login/
+>     Content-Type: application/json
+> 
+>     {
+>       "email": "teste3@example.com",
+>       "password": "teste123"
+>     }
+
+CMD:
+>     curl -X POST "http://localhost:8000/login/" -H "Content-Type: application/json" -d "{\"email\": \"teste3@example.com\", \"password\": \"teste123\"}"
+  
+**Resposta**:  
+>     {
+>       "detail": {
+>         "access": true,
+>         "data": {
+>           "user_id": 1,
+>           "user_name": "Felipe Almeida de Carvalho",
+>           "inner_register": "1",
+>           "email": "flpalmeidac@gmail.com",
+>           "telephone": "5511981272374",
+>           "role_name": "Função Teste",
+>           "admin": true,
+>           "company_name": "root",
+>           "profile_picture": "..."
+>         }
+>       }
+>     }
+
+---
+
+## *Endpoints* de Servidor
+
+| Endpoint                           | Tipo | Formato | Formato da Resposta | Descrição                     |
+|------------------------------------|------|---------|---------------------|-------------------------------|
+| [/server/status](#fetch-post-json) | GET  |         | json                | Verifica o status do servidor |
+
+---
+
+[<-](#endpoints-de-servidor)
+
+### / (GET)  
+Verifica o status do servidor e retorna a data e hora do servidor
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     GET http://localhost:8000/server/status
+
+CMD:
+>     curl -X GET "http://localhost:8000/server/status"
+  
+**Resposta**:  
+>     200 OK
+>     
+>     {
+>       "server_status":"OK",
+>       "server_time":"2025-11-02 20:45:57"
+>     }
+
+---
+
+## *Endpoints* de veículo
+
+**A ser retrabalhado**  
+
+| Endpoint                                  | Tipo | Formato da Requisição | Formato da Resposta | Descrição                                     |
+|-------------------------------------------|------|-----------------------|---------------------|-----------------------------------------------|
+| [/vehicle/fetch](#vehiclefetch-post-json) | POST | application/json      | json                | Consulta de dados de um ou múltiplos veículos |
+| [/vehicle/add](#add-post-json)            | POST | application/json      | json                | Adiciona o registro de um veículo             | 
+| [/vehicle/edit](#edit-post-json)          | POST | application/json      |                     | Modifica o registro de um veículo             | 
+| [/vehicle/remove](#edit-post-json)        | POST | application/json      |                     | Remove o registro de um veículo               |
+
+---
+
+[<-](#endpoints-de-veículo)
+
+### /vehicle/fetch (POST json)  
+Consulta de dados de um ou múltiplos veículos
+
+**Parâmetros**:  
+`company_id`: *integer*    
+`vehicle_id`: *integer* (opcional)
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     POST http://localhost:8000/vehicle/fetch
+>     Content-Type: application/json
+> 
+>     {
+>       "company_id": 1,
+>       "user_id": 2
+>     }
+
+CMD:
+>     curl -X POST "http://localhost:8000/vehicle/fetch" -H "Content-Type: application/json" -d "{\"company_id\": 1, \"vehicle_id\":\"2\"}"
+  
+**Resposta**:  
+>     200 OK
+> 
+>     {
+>       "detail":{
+>         "3":{
+>           "company_id":1,
+>           "name":"Veículo Teste 2",
+>           "license_plate":"23b456d",
+>           "brand":"Teste2",
+>           "model":"Modelo Teste 2",
+>           "year":2026,
+>           "notes":null,
+>           "last_used":null,
+>           "last_user_id":null,
+>           "active_vehicle":true
+>         }
+>       }
+>     }
+
+---
+
+[<-](#endpoints-de-veículo)
+
+### /add (POST json)  
+Adiciona o registro de um veículo
+
+**Parâmetros**:  
+`company_id`: *string*  
+`name`: *string*  
+`license_plate`: *string*  
+`brand`: *string*  
+`model`: *string*  
+`year`: *integer*  
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     POST http://localhost:8000/vehicle/add
+>     Content-Type: application/json
+> 
+>     {
+>       "company_id": "1",
+>       "name": "Veículo Teste",
+>       "license_plate": "test123",
+>       "brand": "Marca Teste",
+>       "model": "Modelo Teste",
+>       "year": "2025"
+>     }
+
+CMD:
+>     curl -X POST "http://localhost:8000/vehicle/add" -H "Content-Type: application/json" -d "{\"company_id\":\"1\",\"name\":\"Veículo Teste\",\"license_plate\":\"test123\",\"brand\":\"Marca Teste\",\"model\":\"Modelo Teste\",\"year\":\"2025\"}"
+
+**Resposta**:  
+>     {
+>       "detail":"Vehicle added successfully"
+>     }
+
+---
+
+[<-](#endpoints-de-veículo)
+
+### /edit (POST json)  
+Modifica o registro de um veículo dados os campos a serem modificados
+
+**Parâmetros**:  
+`vehicle_id`: *integer*  
+`company_id`: *integer* (opcional)  
+`name`: *string* (opcional)  
+`license_plate`: *string* (opcional)  
+`brand`: *string* (opcional)  
+`model`: *string* (opcional)  
+`year`: *integer* (opcional)  
+`notes`: *boolean* (opcional)  
+`last_used`: *string* (opcional)  
+`last_user_id`: *integer* (opcional)
+`last_user_id`: *integer* (opcional)
+`active_vehicle`: *boolean* (opcional)
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     POST http://localhost:8000/user/edit
+>     Content-Type: application/json
+> 
+>     {
+>       "vehicle_id": "4",
+>       "name": "teste_edit",
+>       "acive_vehicle": false
+>     }
+
+CMD:
+>     curl -X POST "http://localhost:8000/vehicle/edit" -H "Content-Type: application/json" -d "{\"vehicle_id\":\"4\",\"name\":\"teste_edit\",\"active_vehicle\":false}"
+
+**Resposta**:  
+>     {
+>       "detail":"Vehicle edited successfully"
+>     }
+
+---
+
+[<-](#endpoints-de-veículo)
+
+### /remove (POST json)  
+Remove o registro de um veículo
+**ATENÇÃO: Remover um registro remove as entries dependentes deste veículo em cascata, como todas as rotas adicionados.**
+
+**Parâmetros**:  
+`vehicle_id`: *integer*
+
+**Chamada exemplo**:  
+
+HTTP Client:
+>     POST http://localhost:8000/vehicle/remove
+>     Content-Type: application/json
+> 
+>     {
+>       "vehicle_id": "4"
+>     }
+
+CMD:
+>     curl -X POST "http://localhost:8000/vehicle/remove" -H "Content-Type: application/json" -d "{\"vehicle_id\":\"4\"}"
+
+**Resposta**:  
+>     {
+>       "detail":"Vehicle removed successfully"
+>     }

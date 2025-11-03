@@ -30,7 +30,7 @@ def fetch_vehicle_service(request: VehicleDataRequest) -> dict | None:
                     "notes": vehicle_entry[7],
                     "last_used": vehicle_entry[8],
                     "last_user_id": vehicle_entry[9],
-                    "active": True if vehicle_entry[10] == 1 else False
+                    "active_vehicle": True if vehicle_entry[10] == 1 else False
                 }
 
             return vehicle_data
