@@ -408,12 +408,12 @@ HTTP Client:
 >     Content-Type: application/json
 > 
 >     {
->       "email": "teste3@example.com",
+>       "email": "teste@example.com",
 >       "password": "teste123"
 >     }
 
 CMD:
->     curl -X POST "http://localhost:8000/login/" -H "Content-Type: application/json" -d "{\"email\": \"teste3@example.com\", \"password\": \"teste123\"}"
+>     curl -X POST "http://localhost:8000/login/" -H "Content-Type: application/json" -d "{\"email\": \"teste@example.com\", \"password\": \"teste123\"}"
   
 **Resposta**:  
 >     {

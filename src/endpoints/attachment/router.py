@@ -1,4 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
+from fastapi.responses import Response, JSONResponse
 from src.core.logging_config import logger
 from .model import AttachmentDataRequest
 from .service import fetch_attachment_service, add_attachment_service, edit_attachment_service, remove_attachment_service
@@ -62,13 +63,13 @@ async def add_attachment(
         logger.error(f"Error while adding attachment: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.put("/{attachment_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/{attachment_id}")
 def edit_attachment(attachment_id: int, request: AttachmentDataRequest):
     """Passes the 'edit attachment' request to the service"""
     logger.info(f"EDIT ATTACHMENT ROUTE HIT: {attachment_id}")
     try:
         edit_attachment_service(attachment_id, request)
-        return {"detail": "Attachment edited successfully"}
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

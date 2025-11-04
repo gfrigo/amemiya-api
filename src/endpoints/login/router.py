@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from fastapi.responses import Response
+from fastapi.responses import Response, JSONResponse
 from .model import LoginDataRequest
 from .service import fetch_login_service
 import logging
@@ -15,10 +15,15 @@ def fetch_user(request: LoginDataRequest):
     logger.info("LOGIN ROUTE HIT")
     try:
         result = fetch_login_service(request)
+
         if not result[0] or not result[1]:
             return Response(status_code=status.HTTP_204_NO_CONTENT)
-        return {"detail": {"access": result[0], "data": result[1]}}
+
+        #return {"detail": {"access": result[0], "data": result[1]}}
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"access": result[0], "data": result[1]})
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error {e}")
