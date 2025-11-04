@@ -1,50 +1,46 @@
-from src.register import Register
-from src.core.database import Execute
-from src.queries import user_queries
+from .queries import AssembleStatement
+from src.core.logging_config import logger
 from base64 import b64encode
 
 
 class LoginRepository:
 
     @staticmethod
-    def get_access(cursor, email: str, password: str) -> tuple:
-        users_data = Register.fetch(cursor, "user", "active_user = 1")
+    def fetch(cursor, query_filter: dict) -> tuple: # (access, user_data)
+        logger.info("FETCH LOGIN REPOSITORY HIT")
 
-        for user_entry in users_data:
-            if user_entry[4] == email and user_entry[3] == password:
-                return True, user_entry[0]  # access, user_id
+        try:
+            select_stmt = AssembleStatement.get_user_data(query_filter)
+            logger.info(f"To execute: {select_stmt}")
 
-        return False, None
+            cursor.execute(select_stmt)
+            logger.info("Executed")
 
-    @staticmethod
-    def get_user_data(cursor, user_id) -> tuple:
-        if not user_id:
-            return False, None
+            result = cursor.fetchone()
 
-        user_data = Execute.Select.from_string(cursor, user_queries.User.get_data(user_id))[0]
-
-        print(user_data)
-
-        user_id, user_name, inner_register, _,  email, telephone, role_id, role_name, admin, company_id, company_name, picture_data, picture_type, active_user = user_data
-
-        encoded_picture_data = b64encode(picture_data).decode("utf-8")
-
-        if user_data:
-            if not active_user:
+            if not result:
                 return False, None
 
-            return (True,
-                 {
-                    "user_id": user_id,
-                    "user_name": user_name,
-                    "inner_register": inner_register,
-                    "email": email,
-                    "telephone": telephone,
-                    "role_name": role_name,
-                    "admin": True if admin == 1 else False,
-                    "company_name": company_name,
-                    "profile_picture": encoded_picture_data
-                }
-            )
+            user_id, user_name, inner_register, email, telephone, role_id, role_name, admin, company_id, company_name, profile_picture_id, profile_picture_data = result
 
-        return False, None
+            encoded_picture_data = b64encode(profile_picture_data).decode("utf-8")
+
+            data = {
+                "user_id": user_id,
+                "user_name": user_name,
+                "inner_register": inner_register,
+                "email": email,
+                "telephone": telephone,
+                "role_id": role_id,
+                "role_name": role_name,
+                "admin": admin == 1,
+                "company_id": company_id,
+                "company_name": company_name,
+                "profile_picture_id": profile_picture_id,
+                "profile_picture_data": encoded_picture_data
+            }
+
+            return True, data
+
+        except IndexError:
+            return False, None

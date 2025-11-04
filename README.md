@@ -33,7 +33,7 @@ Os endpoints funcionam com quatro métodos HTTP:
 
 | Endpoint                                                                 | Tipo | Formato             | Formato da Resposta | Descrição                                    |
 |--------------------------------------------------------------------------|------|---------------------|---------------------|----------------------------------------------|
-| [/user/fetch](#fetch-post-json)                                          | POST | application/json    |                     | Consulta de dados de um ou múltiplos usuário |
+| [/user/{company_id}](#fetch-post-json)                                   | GET  |                     | json                | Consulta de dados de um ou múltiplos usuário |
 | [/user/add](#add-post-json)                                              | POST | application/json    |                     | Adiciona o registro de um usuário            | 
 | [/user/edit](#edit-post-json)                                            | POST | application/json    |                     | Modifica o registro de um usuário            | 
 | [/user/profile_picture/{user_id}](#profile_pictureuser_id-put-form-data) | PUT  | multipart/form-data |                     | Modifica a foto de perfil de um usuário      |
@@ -43,7 +43,7 @@ Os endpoints funcionam com quatro métodos HTTP:
 
 [<-](#endpoints-de-usuário)
 
-### /fetch (POST json)  
+### /{company_id} (GET)  
 Consulta de dados de um ou múltiplos usuário
 
 **Parâmetros**:  
@@ -53,35 +53,40 @@ Consulta de dados de um ou múltiplos usuário
 **Chamada exemplo**:  
 
 HTTP Client:
->     POST http://localhost:8000/user/fetch
->     Content-Type: application/json
-> 
->     {
->       "company_id": 1,
->       "user_id": 30
->     }
+>     GET http://localhost:8000/user/1
+
 
 CMD:
->     curl -X POST "http://localhost:8000/user/fetch" -H "Content-Type: application/json" -d "{\"company_id\": 1, \"user_id\": 30}"
+>     curl -X GET "http://localhost:8000/user/1
   
 **Resposta**:  
 >     200 OK
 > 
->     {
->       "detail": {
->         "user_id":30,
->         "user_name":"teste123",
->         "inner_register":"1",
->         "password":"teste123",
->         "email":"teste2@example.com",
->         "telephone":"2345678901",
+>     [
+>       {
+>         "user_id":1,
+>         "user_name":"Felipe Almeida de Carvalho",
+>         "inner_register":"1111",
+>         "email":"flpalmeidac@gmail.com",
+>         "telephone":"5511981272374",
 >         "role_id":1,
->         "admin":0,
+>         "role_name":"Função Teste",
 >         "company_id":1,
->         "profile_picture_id":1,
->         "active_user":1
+>         "company_name":"root"
+>       }, 
+>       {
+>         "user_id":2,
+>         "user_name":"Usuário Teste",
+>         "inner_register":"0000",
+>         "email":"teste@example.com",
+>         "telephone":"1234567890",
+>         "role_id":1,
+>         "role_name":"Função Teste",
+>         "company_id":1,
+>         "company_name":"root"
 >       }
->     }
+>     ]
+
 
 ---
 
@@ -384,11 +389,9 @@ CMD:
 
 ## *Endpoints* de login
 
-**A ser retrabalhado**  
-
-| Endpoint                    | Tipo | Formato             | Descrição                                 |
-|-----------------------------|------|---------------------|-------------------------------------------|
-| [/login/](#fetch-post-json) | POST | application/json    | Recebe dados de login e verifica o acesso |
+| Endpoint                    | Tipo | Formato             | Formato da Resposta | Descrição                                 |
+|-----------------------------|------|---------------------|---------------------|-------------------------------------------|
+| [/login/](#fetch-post-json) | POST | application/json    | json                | Recebe dados de login e verifica o acesso |
 
 ---
 
@@ -416,22 +419,26 @@ CMD:
 >     curl -X POST "http://localhost:8000/login/" -H "Content-Type: application/json" -d "{\"email\": \"teste@example.com\", \"password\": \"teste123\"}"
   
 **Resposta**:  
+>     200 OK
+> 
 >     {
->       "detail": {
->         "access": true,
->         "data": {
->           "user_id": 1,
->           "user_name": "Felipe Almeida de Carvalho",
->           "inner_register": "1",
->           "email": "flpalmeidac@gmail.com",
->           "telephone": "5511981272374",
->           "role_name": "Função Teste",
->           "admin": true,
->           "company_name": "root",
->           "profile_picture": "..."
->         }
+>       "access":true,
+>       "data":{
+>         "user_id":2,
+>         "user_name":"Usuário Teste",
+>         "inner_register":"0000",
+>         "email":"teste@example.com",
+>         "telephone":"1234567890",
+>         "role_id":1,
+>         "role_name":"Função Teste",
+>         "admin":true,
+>         "company_id":1,
+>         "company_name":"root",
+>         "profile_picture_id":1,
+>         "profile_picture_data":"..."
 >       }
 >     }
+
 
 ---
 

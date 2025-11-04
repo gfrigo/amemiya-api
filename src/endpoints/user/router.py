@@ -9,11 +9,20 @@ from datetime import datetime
 
 router = APIRouter(prefix="/user", tags=["User"])
 
-@router.post("/fetch")
-def fetch_user(request: UserDataRequest):
+@router.get("/{company_id}")
+def fetch_user(
+        company_id: int,
+        user_id: int | None = None
+    ):
     logger.info("FETCH USER ROUTE HIT")
+
+    request_data = {
+        "company_id": company_id,
+        "user_id": user_id
+    }
+
     try:
-        result = fetch_user_service(request)
+        result = fetch_user_service(request_data)
 
         if result:
             return JSONResponse(status_code=status.HTTP_200_OK, content=result)

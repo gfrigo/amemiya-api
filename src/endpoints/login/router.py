@@ -13,14 +13,20 @@ router = APIRouter(prefix="/login", tags=["Login"])
 def fetch_user(request: LoginDataRequest):
     """Authenticate and return login data."""
     logger.info("LOGIN ROUTE HIT")
-    try:
-        result = fetch_login_service(request)
 
-        if not result[0] or not result[1]:
+    raw_data = request.model_dump()
+    data = {
+        "email": raw_data["email"],
+        "password": raw_data["password"]
+    }
+
+    try:
+        access, user_data = fetch_login_service(data)
+
+        if not access or not user_data:
             return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-        #return {"detail": {"access": result[0], "data": result[1]}}
-        return JSONResponse(status_code=status.HTTP_200_OK, content={"access": result[0], "data": result[1]})
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"access": access, "data": user_data})
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
