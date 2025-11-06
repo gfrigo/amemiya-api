@@ -37,25 +37,42 @@ def fetch_attachment_service(company_id: int,
 
     return result
 
-def add_attachment_service(data):
+def add_attachment_service(request_data: dict):
     logger.info("ADD ATTACHMENT SERVICE HIT")
+
+    request_data = {k: v for k, v in request_data.items() if v is not None}
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
 
-            attachment_id = AttachmentRepository.add(cursor, data.dict())
-            conn.commit()
+            attachment_id: int = AttachmentRepository.add(cursor, request_data)
 
-    return attachment_id
+        conn.commit()
 
-def edit_attachment_service(attachment_id: int, request: AttachmentDataRequest):
+    if attachment_id:
+        return attachment_id
+
+    else:
+        return None
+
+def edit_attachment_service(request_data: dict):
     logger.info("EDIT ATTACHMENT SERVICE HIT")
-    data = request.model_dump()
+
+    request_data = {k: v for k, v in request_data.items() if v is not None}
+
+    request_attachment_id: int = request_data.get("attachment_id")
 
     query_filter = {
+        "table": "Attachments",
         "attachment_id": {"type": "index",
-                          "value": attachment_id,
+                          "value": request_attachment_id,
                           "table": "Attachments"}
+    }
+
+    query_data = {
+        "table": "Attachments",
+        "filter": query_filter,
+        "data": request_data
     }
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
@@ -66,8 +83,9 @@ def edit_attachment_service(attachment_id: int, request: AttachmentDataRequest):
             if not attachment_data:
                 raise IndexError("Attachment ID has no data")
 
-            AttachmentRepository.edit(cursor, attachment_id, data)
-            conn.commit()
+            AttachmentRepository.edit(cursor, query_data)
+
+        conn.commit()
 
 def remove_attachment_service(attachment_id: int):
     logger.info("REMOVE ATTACHMENT SERVICE HIT")
@@ -79,6 +97,11 @@ def remove_attachment_service(attachment_id: int):
                           "table": "Attachments"}
     }
 
+    query_data = {
+        "table": "Attachments",
+        "filter": query_filter
+    }
+
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
             attachment_data: dict = AttachmentRepository.fetch(cursor, query_filter)
@@ -86,5 +109,6 @@ def remove_attachment_service(attachment_id: int):
             if not attachment_data:
                 raise IndexError("Attachment ID has no data")
 
-            generic_repository.remove(cursor, query_filter)
-            conn.commit()
+            AttachmentRepository.remove(cursor, query_data)
+
+        conn.commit()

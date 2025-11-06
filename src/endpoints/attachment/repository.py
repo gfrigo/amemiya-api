@@ -2,12 +2,13 @@ from .queries import AssembleStatement
 from src.core.logging_config import logger
 from src.register import Register
 from base64 import b64encode
+from src.endpoints import generic_repository
 
 
 class AttachmentRepository:
 
     @staticmethod
-    def fetch(cursor, query_filter: dict) -> dict | None:
+    def fetch(cursor, query_filter: dict) -> dict | list | None:
         logger.info("FETCH ATTACHMENT REPOSITORY HIT")
 
         try:
@@ -22,7 +23,7 @@ class AttachmentRepository:
             if not result:
                 return None
 
-            data: dict = {}
+            data: list = []
             for entry in result:
                 attachment_id, company_name, user_name, file_data, file_type, attachment_type, upload_date = entry
 
@@ -32,14 +33,14 @@ class AttachmentRepository:
                 with open(file_name, "wb") as f:
                     f.write(file_data)
 
-                data[attachment_id] = {
+                data.append({
                     "company_name": company_name,
                     "user_name": user_name,
                     "file_data": encoded_file_data,
                     "file_type": file_type,
                     "attachment_type": attachment_type,
                     "upload_date": upload_date
-                }
+                })
 
             return data
 
@@ -65,24 +66,34 @@ class AttachmentRepository:
 
         return cursor.lastrowid
 
+
     @staticmethod
-    def edit(cursor, attachment_id, data: dict):
+    def edit(cursor, data: dict):
         logger.info("EDIT ATTACHMENT REPOSITORY HIT")
 
         try:
-            update_stmt = AssembleStatement.edit_attachment(attachment_id, data)
+            update_stmt = generic_repository.edit(data)
             logger.info(f"To execute: {update_stmt}")
 
-            cursor.execute(update_stmt, tuple(v for v in data.values() if v is not None))
+            cursor.execute(update_stmt)
             logger.info("Executed")
 
         except Exception as e:
             print(e)
             return None
 
+
     @staticmethod
-    def remove(cursor, attachment_id: int):
+    def remove(cursor, data: dict):
         logger.info("REMOVE ATTACHMENT REPOSITORY HIT")
 
-        Register.remove(cursor, "user", f"user_id = {data['user_id']}")
+        try:
+            remove_stmt = generic_repository.remove(data)
+            logger.info(f"To execute: {remove_stmt}")
+
+            cursor.execute(remove_stmt)
+            logger.info("Executed")
+
+        except Exception as e:
+            logger.info("Error during edit:", e)
 

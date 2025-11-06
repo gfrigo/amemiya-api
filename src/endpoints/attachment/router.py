@@ -26,7 +26,8 @@ def fetch_attachment(
             date_range_end
         )
 
-        return {"detail": result}
+        return JSONResponse(status_code=status.HTTP_200_OK, content=result)
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -45,18 +46,20 @@ async def add_attachment(
 
     file_bytes: bytes = await file.read()
 
-    data = AttachmentDataRequest(
+    request_data = AttachmentDataRequest(
         uploaded_by_company_id=company_id,
         uploaded_by_user_id=user_id,
         file_data=file_bytes,
         file_type=file_type,
         attachment_type=attachment_type,
         upload_date=str(datetime.now())
-    )
+    ).model_dump()
 
     try:
-        add_attachment_service(data)
-        return {"detail": "Attachment added successfully"}
+        add_attachment_service(request_data)
+
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -67,8 +70,12 @@ async def add_attachment(
 def edit_attachment(attachment_id: int, request: AttachmentDataRequest):
     """Passes the 'edit attachment' request to the service"""
     logger.info(f"EDIT ATTACHMENT ROUTE HIT: {attachment_id}")
+
+    request_data = request.model_dump()
+    request_data["attachment_id"] = attachment_id
+
     try:
-        edit_attachment_service(attachment_id, request)
+        edit_attachment_service(request_data)
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
