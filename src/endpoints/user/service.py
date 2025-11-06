@@ -6,65 +6,106 @@ from src.core.utils import check_missing_fields
 from src.core.config import settings
 
 
-def fetch_user_service(request: UserDataRequest) -> dict:
+def fetch_user_service(request_data: dict) -> dict | list:
     logger.info("FETCH USER SERVICE HIT")
-    data = request.model_dump()
-    required_fields = ["company_id"]
-    check_missing_fields(data, required_fields)
+
+    request_company_id: int = request_data["company_id"]
+    request_user_id: int = request_data["user_id"]
+
+    query_filter = {
+        "company_id": {"type": "index",
+                       "value": request_company_id,
+                       "table": "Users"},
+        "user_id": {"type": "index",
+                    "value": request_user_id,
+                    "table": "Users"}
+    }
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
-            result: dict = UserRepository.fetch(cursor, data)
+            result: dict | list = UserRepository.fetch(cursor, query_filter)
 
             return result
 
-def add_user_service(request: UserDataRequest, conn = None, cursor = None):
+def add_user_service(request_data: dict):
     logger.info("ADD USER SERVICE HIT")
-    data = request.model_dump()
-    required_fields = ["user_name", "password", "email", "telephone", "role_id", "company_id"]
-    check_missing_fields(data, required_fields)
+
+    request_data = {k: v for k, v in request_data.items() if v is not None}
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
-            UserRepository.add(cursor, data)
-            conn.commit()
 
-    return "User added successfully"
+            user_id: int = UserRepository.add(cursor, request_data)
 
-def edit_user_service(request: UserDataRequest | dict, conn = None, cursor = None):
-    logger.info("EDIT USER SERVICE HIT")
+        conn.commit()
 
-    if not isinstance(request, dict):
-        data = request.model_dump()
-        required_fields = ["user_id"]
-        check_missing_fields(data, required_fields)
+    if user_id:
+        return user_id
 
     else:
-        data = request
+        return None
+
+def edit_user_service(request_data: dict):
+    logger.info("EDIT USER SERVICE HIT")
+
+    request_data = {k: v for k, v in request_data.items() if v is not None}
+
+    request_company_id: int = request_data.get("company_id")
+    request_user_id: int = request_data.get("user_id")
+
+    query_filter = {
+        "company_id": {"type": "index",
+                       "value": request_company_id,
+                       "table": "Users"},
+        "user_id": {"type": "index",
+                    "value": request_user_id,
+                    "table": "Users"}
+    }
+
+    query_data = {
+        "table": "Users",
+        "filter": query_filter,
+        "data": request_data
+    }
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
-            user_data: dict = UserRepository.fetch(cursor, data)
+
+            user_data: dict = UserRepository.fetch(cursor, query_filter)
+
             if not user_data:
                 return "user_id has no data"
 
-            UserRepository.edit(cursor, data)
-            conn.commit()
+            UserRepository.edit(cursor, query_data)
+
+        conn.commit()
 
     return "User edited successfully"
 
-def remove_user_service(request: UserDataRequest, conn = None, cursor = None):
+def remove_user_service(request_data: dict):
     logger.info("REMOVE USER SERVICE HIT")
-    data = request.model_dump()
-    required_fields = ["user_id"]
-    check_missing_fields(data, required_fields)
+
+    request_user_id: int = request_data.get("user_id")
+
+    query_filter = {
+        "user_id": {"type": "index",
+                    "value": request_user_id,
+                    "table": "Users"}
+    }
+
+    query_data = {
+        "table": "Users",
+        "filter": query_filter
+    }
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
-            user_data: dict = UserRepository.fetch(cursor, data)
+            user_data: dict = UserRepository.fetch(cursor, query_filter)
             if not user_data:
                 return "user_id has no data"
 
-            UserRepository.remove(cursor, data)
-            conn.commit()
+            UserRepository.remove(cursor, query_data)
+
+        conn.commit()
+
     return "User removed successfully"

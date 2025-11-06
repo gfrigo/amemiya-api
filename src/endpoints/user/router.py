@@ -9,11 +9,20 @@ from datetime import datetime
 
 router = APIRouter(prefix="/user", tags=["User"])
 
-@router.post("/fetch")
-def fetch_user(request: UserDataRequest):
+@router.get("/{company_id}")
+def fetch_user(
+        company_id: int,
+        user_id: int | None = None
+    ):
     logger.info("FETCH USER ROUTE HIT")
+
+    request_data = {
+        "company_id": company_id,
+        "user_id": user_id
+    }
+
     try:
-        result = fetch_user_service(request)
+        result = fetch_user_service(request_data)
 
         if result:
             return JSONResponse(status_code=status.HTTP_200_OK, content=result)
@@ -26,25 +35,50 @@ def fetch_user(request: UserDataRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/add")
-def add_user(request: UserDataRequest):
+@router.post("/{company_id}")
+def add_user(
+        company_id: int,
+        request: UserDataRequest
+    ):
     logger.info("ADD USER ROUTE HIT")
+
+    request_data = request.model_dump()
+    request_data["company_id"] = company_id
+
+    print(request_data)
+
     try:
-        result = add_user_service(request)
-        return {"detail": result}
+        user_id: int = add_user_service(request_data)
+
+        if not user_id:
+            return Response(status_code=status.HTTP_400_BAD_REQUEST)
+
+        return JSONResponse(status_code=status.HTTP_201_CREATED, content={"user_id": user_id})
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error {str(e)}")
 
-@router.post("/edit")
-def edit_user(request: UserDataRequest):
+@router.put("/{user_id}")
+def edit_user(
+        user_id: int,
+        request: UserDataRequest
+    ):
     logger.info("EDIT USER ROUTE HIT")
+
+    request_data = request.model_dump()
+    request_data["user_id"] = user_id
+
     try:
-        result = edit_user_service(request)
-        return {"detail": result}
+        edit_user_service(request_data)
+
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error {str(e)}")
 
@@ -79,13 +113,19 @@ async def edit_user(user_id: int, company_id: int = Form(...), file_type: str = 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error {str(e)}")
 
-@router.post("/remove")
-def remove_user(request: UserDataRequest):
+@router.delete("/{user_id}")
+def remove_user(user_id: int):
     logger.info("REMOVE USER ROUTE HIT")
+
+    request_data = {"user_id": user_id}
+
     try:
-        result = remove_user_service(request)
-        return {"detail": result}
+        remove_user_service(request_data)
+
+        Response(status_code=status.HTTP_204_NO_CONTENT)
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error {e}")

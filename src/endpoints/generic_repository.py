@@ -7,8 +7,6 @@ ATTACHMENTS = Table("Attachments")
 COMPANIES = Table("Companies")
 USERS = Table("Users")
 
-logger.info("GENERIC REPOSITORY HIT")
-
 def get_last_entry(cursor, target_table: str, target_column: str):
     logger.info("GET LAST ENTRY GENERIC REPOSITORY HIT")
 
@@ -31,19 +29,39 @@ def get_last_entry(cursor, target_table: str, target_column: str):
         print(e)
         return None
 
+def edit(update_data: dict):
+    logger.info("EDIT GENERIC REPOSITORY HIT")
 
-def remove(cursor, query_filter: dict):
+    table_name = update_data["table"]
+    data = update_data["data"]
+    filter_ = update_data.get("filter")
+
+    table = Table(table_name)
+
+    stmt = MySQLQuery.update(table)
+
+    for key, value in data.items():
+        stmt = stmt.set(table[key], value)
+
+    if filter_:
+        condition = assemble_condition(filter_)
+        stmt = stmt.where(condition)
+
+
+    return stmt.get_sql()
+
+
+def remove(delete_data: dict):
     logger.info("REMOVE GENERIC REPOSITORY HIT")
 
-    try:
-        stmt = MySQLQuery.from_(query_filter["table"]).where(assemble_condition(query_filter)).delete()
-        delete_stmt = stmt.get_sql()
+    table_name = delete_data["table"]
+    filter_ = delete_data["filter"]
 
-        logger.info(f"To execute: {delete_stmt}")
+    table = Table(table_name)
 
-        cursor.execute(delete_stmt)
-        logger.info("Executed")
+    condition = assemble_condition(filter_)
 
-    except Exception as e:
-        print(e)
-        return None
+    stmt = MySQLQuery.from_(table).where(condition).delete()
+
+    return stmt.get_sql()
+
