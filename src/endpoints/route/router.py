@@ -1,31 +1,42 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
+from fastapi.responses import Response, JSONResponse
 from src.core.logging_config import logger
 from .model import RouteDataRequest
-from .service import fetch_attachment_service, add_route_service, edit_attachment_service, remove_attachment_service
+from .service import fetch_route_service, add_route_service, edit_route_service, remove_route_service
 from datetime import datetime
 
 router = APIRouter(prefix="/route", tags=["Route"])
 
 @router.get("/{company_id}", status_code=status.HTTP_200_OK)
-def fetch_attachment(
+def fetch_route(
         company_id: int,
+        route_id: int | None = None,
         user_id: int | None = None,
-        attachment_type: str | None = None,
+        country: str | None = None,
+        state: str | None = None,
+        city: str | None = None,
+        district: str | None = None,
         date_range_start: str | None = None,
         date_range_end: str | None = None
     ):
-    logger.info("FETCH ATTACHMENT ROUTE HIT")
+    logger.info("FETCH ROUTE ROUTE HIT")
+
+    request_data = {
+        "company_id": company_id,
+        "route_id": route_id,
+        "user_id": user_id,
+        "country": country,
+        "state": state,
+        "city": city,
+        "district": district,
+        "date_range_start": date_range_start,
+        "date_range_end": date_range_end
+    }
 
     try:
-        result = fetch_attachment_service(
-            company_id,
-            user_id,
-            attachment_type,
-            date_range_start,
-            date_range_end
-        )
+        result = fetch_route_service(request_data)
 
-        return {"detail": result}
+        return JSONResponse(status_code=status.HTTP_200_OK, content=result)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -39,16 +50,16 @@ def add_route(
     """Passes the 'add route' request to the service"""
     logger.info("ADD ROUTE ROUTE HIT")
 
-    raw_data = request.model_dump()
-    data = {
+    raw_request_data = request.model_dump()
+    request_data = {
         "company_id": company_id,
-        "user_id": raw_data["user_id"],
+        "user_id": raw_request_data["created_by_user_id"],
         "creation_datetime": str(datetime.now()),
-        "subroutes": raw_data["subroutes"]
+        "subroutes": raw_request_data["subroutes"]
     }
 
     try:
-        add_route_service(data)
+        add_route_service(request_data)
         return {"detail": "Route added successfully"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -56,28 +67,36 @@ def add_route(
         logger.error(f"Error while adding route: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.put("/{attachment_id}", status_code=status.HTTP_204_NO_CONTENT)
-def edit_attachment(attachment_id: int, request: RouteDataRequest):
-    """Passes the 'edit attachment' request to the service"""
-    logger.info(f"EDIT ATTACHMENT ROUTE HIT: {attachment_id}")
+@router.put("/{route_id}")
+def edit_route(route_id: int, request: RouteDataRequest):
+    """Passes the 'edit route' request to the service"""
+    logger.info(f"EDIT ROUTE ROUTE HIT: {route_id}")
+
+    request_data = request.model_dump()
+    request_data["route_id"] = route_id
+
     try:
-        edit_attachment_service(attachment_id, request)
-        return {"detail": "Attachment edited successfully"}
+        edit_route_service(request_data)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
     except Exception as e:
-        logger.error(f"Error while editing attachment: {e}")
+        logger.error(f"Error while editing route: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.delete("/{attachment_id}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_attachment(attachment_id: int):
-    """Passes the 'remove attachment' request to the service"""
-    logger.info("REMOVE ATTACHMENT ROUTE HIT")
+@router.delete("/{route_id}")
+def remove_route(route_id: int):
+    """Passes the 'remove route' request to the service"""
+    logger.info("REMOVE ROUTE ROUTE HIT")
     try:
-        remove_attachment_service(attachment_id)
-        return {"detail": "Attachment removed successfully"}
+        remove_route_service(route_id)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
     except Exception as e:
-        logger.error(f"Error while removing attachment: {e}")
+        logger.error(f"Error while removing route: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
