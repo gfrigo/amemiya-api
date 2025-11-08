@@ -1,25 +1,32 @@
-#pylint: disable-all
+# pylint: disable-all
 from pypika import MySQLQuery, Table
+from operator import and_
+from src.queries.generic import assemble_condition
+
 
 ROUTES = Table("Routes")
 COMPANIES = Table("Companies")
 DELIVERY = Table("Delivery")
 
-
-def get_data(delivery_id: int) -> str:
+def get_data(query_filter: dict) -> str:
     query = (
-        MySQLQuery.from_(DELIVERY).select(
+        MySQLQuery
+        .from_(DELIVERY)
+        .join(ROUTES)
+        .on(DELIVERY.route_id == ROUTES.route_id)
+        .join(COMPANIES)
+        .on(ROUTES.created_by_company_id == COMPANIES.company_id)
+        .select(
             DELIVERY.delivery_id,
-            DELIVERY.user_id,
-            DELIVERY.vehicle_id,
             DELIVERY.route_id,
+            DELIVERY.vehicle_id,
+            DELIVERY.start_time,
             DELIVERY.finish_time,
             DELIVERY.load_name,
-            DELIVERY.start_time,
-            DELIVERY.status
-            
+            ROUTES.address,
+            COMPANIES.company_name
         )
-        .where(DELIVERY.delivery_id == delivery_id)
+        .where(assemble_condition(query_filter))
     )
 
-    return str(query)
+    return query.get_sql()

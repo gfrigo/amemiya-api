@@ -7,22 +7,19 @@ from datetime import datetime
 router = APIRouter(prefix="/delivery", tags=["Delivery"])
 
 @router.get("/{delivery_id}", status_code=status.HTTP_200_OK)
-def fetch_attachment(
-        delivery_id: int | None = None,
-        user_id: int | None = None,
+def fetch_delivery(
+        delivery_id: int,
         vehicle_id: int | None = None,
         route_id: int | None = None,
         finish_time: str | None = None,
         load_name: str | None = None,
         start_time: str | None = None,
-        status: str | None = None,
     ):
-    logger.info("FETCH ATTACHMENT ROUTE HIT")
+    logger.info("FETCH DELIVERY ROUTE HIT")
 
     try:
         result = fetch_attachment_service(
             delivery_id,
-            user_id,
             vehicle_id,
             route_id,
             finish_time,
@@ -40,7 +37,7 @@ def fetch_attachment(
 @router.post("/{company_id}", status_code=status.HTTP_201_CREATED)
 def add_route(
         company_id: int,
-        request: RouteDataRequest
+        request: DeliveryDataRequest
         ):
     """Passes the 'add route' request to the service"""
     logger.info("ADD ROUTE ROUTE HIT")
@@ -63,7 +60,7 @@ def add_route(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.put("/{attachment_id}", status_code=status.HTTP_204_NO_CONTENT)
-def edit_attachment(attachment_id: int, request: RouteDataRequest):
+def edit_attachment(attachment_id: int, request: DeliveryDataRequest):
     """Passes the 'edit attachment' request to the service"""
     logger.info(f"EDIT ATTACHMENT ROUTE HIT: {attachment_id}")
     try:

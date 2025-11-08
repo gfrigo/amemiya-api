@@ -7,27 +7,31 @@ from src.core.utils import check_missing_fields
 from src.core.config import settings
 
 
-def fetch_delivery_service(company_id: int,
-                             user_id: int | None = None,
-                             attachment_type: str | None = None,
-                             date_range_start: str | None = None,
-                             date_range_end: str | None = None) -> dict:
+def fetch_delivery_service(delivery_id: int,
+                             vehicle_id: int | None = None,
+                             route_id: int | None = None,
+                             finish_time: str | None = None,
+                             load_name: str | None = None,
+                             start_time: str | None = None) -> dict:
 
     logger.info("FETCH DELIVERY SERVICE HIT")
 
     query_filter = {
-            "uploaded_by_company_id": {"type": "index",
-                                       "value": company_id,
-                                       "table": "Attachments"},
-            "uploaded_by_user_id": {"type": "index",
-                                    "value": user_id,
-                                    "table": "Attachments"},
-            "attachment_type": {"type": "index",
-                                "value": attachment_type,
-                                "table": "Attachments"},
+            "delivery_id": {"type": "index",
+                                       "value": delivery_id,
+                                       "table": "Delivery"},
+            "route_id": {"type": "index",
+                                    "value": route_id,
+                                    "table": "Delivery"},
+            "vehicle_id": {"type": "index",
+                                    "value": vehicle_id,
+                                    "table": "Delivery"},
+            "load_name": {"type": "index",
+                                "value": load_name,
+                                "table": "Delivery"},
             "upload_date": {"type": "date_range",
-                            "value": (date_range_start, date_range_end),
-                            "table": "Attachments"}
+                            "value": (start_time, finish_time),
+                            "table": "Delivery"}
     }
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
@@ -37,37 +41,24 @@ def fetch_delivery_service(company_id: int,
 
     return result
 
-def add_route_service(data: dict):
-    logger.info("ADD ROUTE SERVICE HIT")
+def add_delivery_service(data: dict):
+    logger.info("ADD DELIVERY SERVICE HIT")
 
-    route_data: dict = data
-    subroutes: list = route_data.pop("subroutes")
-
-    subroutes_data: dict = {}
-    for idx, entry in enumerate(subroutes):
-        entry_data = list(entry.values())
-        subroutes_data[idx+1] = {
-            "subroute_type": entry_data[0],
-            "address": entry_data[1],
-            "longitude": entry_data[2],
-            "latitude": entry_data[3]
-        }
-
-    route_data["subroutes"] = subroutes_data
+    delivery_data: dict = data
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
 
-            route_id = RouteRepository.add(cursor, data)
+            delivery_id = RouteRepository.add(cursor, data)
             conn.commit()
 
-    if route_id:
+    if delivery_id:
         return "Route added successfully"
 
     else:
         return "Route creation failed"
 
-def edit_attachment_service(attachment_id: int, request: RouteDataRequest):
+def edit_attachment_service(attachment_id: int, request: DeliveryDataRequest):
     logger.info("EDIT ATTACHMENT SERVICE HIT")
     data = request.model_dump()
 
