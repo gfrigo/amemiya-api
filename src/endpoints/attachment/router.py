@@ -36,7 +36,7 @@ def fetch_attachment(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/{company_id}", status_code=status.HTTP_201_CREATED)
+@router.post("/{company_id}")
 async def add_attachment(
         company_id: int,
         user_id: int = Form(...),
@@ -59,9 +59,13 @@ async def add_attachment(
     ).model_dump()
 
     try:
-        add_attachment_service(request_data)
+        attachment_id = add_attachment_service(request_data)
 
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
+        if attachment_id:
+            return Response(status_code=status.HTTP_201_CREATED)
+
+        else:
+            return Response(status_code=status.HTTP_400_BAD_REQUEST)
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
