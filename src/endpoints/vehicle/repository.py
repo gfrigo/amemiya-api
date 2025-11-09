@@ -2,86 +2,98 @@ from src.core.logging_config import logger
 from src.register import Register
 from pypika import MySQLQuery, Table, Parameter
 from src.map import fetch, add, edit, remove
+from .queries import AssembleStatement
+from src.endpoints import generic_repository
 
 
 class VehicleRepository:
-    vehicle_table = Table("Vehicle")
 
-    @classmethod
-    def fetch(cls, cursor, data: dict, selection: list | None) -> list | None:
+    @staticmethod
+    def fetch(cursor, query_filter: dict) -> dict | list | None:
         logger.info("FETCH VEHICLE REPOSITORY HIT")
-        company_id: int = data["company_id"]
-        vehicle_id: int = data["vehicle_id"]
 
-        if not company_id and not vehicle_id:
+        try:
+
+            select_stmt = AssembleStatement.get_vehicle_data(query_filter)
+            logger.info(f"To execute: {select_stmt}")
+
+            cursor.execute(select_stmt)
+            logger.info("Executed")
+
+            result = cursor.fetchall()
+
+            vehicles_data: list = []
+
+            vehicles = result
+            for vehicle_entry in vehicles:
+                vehicle_id, vehicle_name, license_plate, brand, model, year, notes, company_id, company_name, last_user_id, user_name, last_used, active_vehicle = vehicle_entry
+
+                vehicles_data.append({
+                    "vehicle_id": vehicle_id,
+                    "vehicle_name": vehicle_name,
+                    "license_plate": license_plate,
+                    "brand": brand,
+                    "model": model,
+                    "year": year,
+                    "notes": notes,
+                    "company_id": company_id,
+                    "company_name": company_name,
+                    "last_user_id": last_user_id,
+                    "last_user_name": user_name,
+                    "last_used": last_used,
+                    "active_vehicle": active_vehicle == 1
+                })
+
+            return vehicles_data
+
+        except IndexError:
             return None
 
-        if selection:
-            columns = [getattr(cls.vehicle_table, column) for column in selection]
-        else:
-            columns = [cls.vehicle_table.star]
+        except ValueError:
+            return None
 
-        if vehicle_id:
-            query = MySQLQuery.from_(cls.vehicle_table).select(*columns).where(
-                cls.vehicle_table.vehicle_id == vehicle_id)
-        else:
-            query = MySQLQuery.from_(cls.vehicle_table).select(*columns).where(
-                cls.vehicle_table.company_id == company_id)
-
-        query_str = query.get_sql()
-
-        logger.info(f"To execute: {query_str}")
-
-        cursor.execute(query_str)
-        result = cursor.fetchall()
-
-        return result
-
-
-    @classmethod
-    def add(cls, cursor, data: dict):
+    @staticmethod
+    def add(cursor, data: dict):
         logger.info("ADD VEHICLE REPOSITORY HIT")
 
-        values: tuple = (
-            data["company_id"],
-            data["name"],
-            data["license_plate"],
-            data["brand"],
-            data["model"],
-            data["year"]
-        )
+        try:
+            insert_stmt = AssembleStatement.add_vehicle(tuple(data.keys()), tuple(data.values()))
+            logger.info(f"To execute: {insert_stmt}")
 
-        mapping = add.get("vehicle")
-        if not mapping:
-            raise KeyError("Unknown entity 'vehicle'")
+            cursor.execute(insert_stmt)
+            logger.info("Executed")
 
-        query = MySQLQuery.into(cls.vehicle_table).columns([
-            "company_id",
-            "name",
-            "license_plate",
-            "brand",
-            "model",
-            "year"
-        ]).insert(*[Parameter("%s")]*6)
-        query_str = query.get_sql()
+        except Exception as e:
+            print(e)
+            return None
 
-        cursor.execute(query_str, values)
+        return cursor.lastrowid
 
-    @classmethod
-    def edit(cls, cursor, data: dict):
+    @staticmethod
+    def edit(cursor, data: dict):
         logger.info("EDIT VEHICLE REPOSITORY HIT")
 
-        key = f"vehicle_id = {data['vehicle_id']}"
-        Register.edit(cursor, "vehicle", data, key)
+        try:
+            update_stmt = generic_repository.edit(data)
+            logger.info(f"To execute: {update_stmt}")
 
-    @classmethod
-    def remove(cls, cursor, data: dict):
+            cursor.execute(update_stmt)
+            logger.info("Executed")
+
+        except Exception as e:
+            logger.info("Error during edit:", e)
+
+    @staticmethod
+    def remove(cursor, data: dict):
         logger.info("REMOVE VEHICLE REPOSITORY HIT")
 
-        query = MySQLQuery.from_(cls.vehicle_table).delete().where(cls.vehicle_table.vehicle_id == data["vehicle_id"])
-        query_str = query.get_sql()
+        try:
+            remove_stmt = generic_repository.remove(data)
+            logger.info(f"To execute: {remove_stmt}")
 
-        logger.debug(f"To execute: {query_str}")
+            cursor.execute(remove_stmt)
+            logger.info("Executed")
 
-        cursor.execute(query_str)
+        except Exception as e:
+            logger.info("Error during remotion:", e)
 

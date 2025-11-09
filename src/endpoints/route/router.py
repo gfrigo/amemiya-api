@@ -34,9 +34,13 @@ def fetch_route(
     }
 
     try:
-        result = fetch_route_service(request_data)
+        route_data = fetch_route_service(request_data)
 
-        return JSONResponse(status_code=status.HTTP_200_OK, content=result)
+        if route_data:
+            return JSONResponse(status_code=status.HTTP_200_OK, content={"data": route_data})
+
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

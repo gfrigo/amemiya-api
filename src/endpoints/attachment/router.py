@@ -18,7 +18,7 @@ def fetch_attachment(
     logger.info("FETCH ATTACHMENT ROUTE HIT")
 
     try:
-        result = fetch_attachment_service(
+        attachment_data = fetch_attachment_service(
             company_id,
             user_id,
             attachment_type,
@@ -26,16 +26,19 @@ def fetch_attachment(
             date_range_end
         )
 
-        return JSONResponse(status_code=status.HTTP_200_OK, content=result)
+        if attachment_data:
+            return JSONResponse(status_code=status.HTTP_200_OK, content={"data": attachment_data})
+
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/{company_id}", status_code=status.HTTP_201_CREATED)
 async def add_attachment(
-        company_id: int = Form(...),
+        company_id: int,
         user_id: int = Form(...),
         file: UploadFile = File(...),
         file_type: str = Form(...),

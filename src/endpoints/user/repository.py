@@ -125,4 +125,5 @@ class UserRepository:
             logger.info("Executed")
 
         except Exception as e:
-            logger.info("Error during edit:", e)
+            logger.info("Error during remotion:", e)
+

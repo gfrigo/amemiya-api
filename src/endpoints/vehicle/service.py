@@ -6,84 +6,132 @@ from src.core.utils import check_missing_fields
 from src.core.config import settings
 
 
-def fetch_vehicle_service(request: VehicleDataRequest) -> dict | None:
+def fetch_vehicle_service(request_data: dict) -> dict | None:
     logger.info("FETCH VEHICLE SERVICE HIT")
-    data = request.model_dump()
-    required_fields = ["company_id"]
-    check_missing_fields(data, required_fields)
+
+    request_data = {k: v for k, v in request_data.items() if v is not None}
+
+    query_filter = {
+        "vehicle_id": {"type": "index",
+                       "value": request_data.get("vehicle_id"),
+                       "table": "Vehicles"},
+        "company_id": {"type": "index",
+                       "value": request_data.get("company_id"),
+                       "table": "Vehicles"},
+        "vehicle_name": {"type": "similarity",
+                         "value": request_data.get("vehicle_name"),
+                         "table": "Vehicles"},
+        "license_plate": {"type": "similarity",
+                          "value": request_data.get("license_plate"),
+                          "table": "Vehicles"},
+        "brand": {"type": "index",
+                  "value": request_data.get("brand"),
+                  "table": "Vehicles"},
+        "model": {"type": "similarity",
+                  "value": request_data.get("model"),
+                  "table": "Vehicles"},
+        "year": {"type": "index",
+                 "value": request_data.get("year"),
+                 "table": "Vehicles"},
+        "last_used": {"type": "date_range",
+                      "value": (request_data.get("date_range_start"), request_data.get("date_range_end")),
+                      "table": "Vehicles"},
+        "last_user_id": {"type": "index",
+                         "value": request_data.get("last_user_id"),
+                         "table": "Vehicles"},
+        "active_vehicle": {"type": "index",
+                           "value": request_data.get("active_vehicle"),
+                           "table": "Vehicles"}
+    }
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
-            result: list = VehicleRepository.fetch(cursor, data, None)
 
-            logger.info(f"Query result: {result}")
+            vehicles_data: dict = VehicleRepository.fetch(cursor, query_filter)
 
-            vehicle_data = {}
-            for vehicle_entry in result:
-                vehicle_data[vehicle_entry[0]] = {
-                    "company_id": vehicle_entry[1],
-                    "name": vehicle_entry[2],
-                    "license_plate": vehicle_entry[3],
-                    "brand": vehicle_entry[4],
-                    "model": vehicle_entry[5],
-                    "year": vehicle_entry[6],
-                    "notes": vehicle_entry[7],
-                    "last_used": vehicle_entry[8],
-                    "last_user_id": vehicle_entry[9],
-                    "active_vehicle": True if vehicle_entry[10] == 1 else False
-                }
+            return vehicles_data
 
-            return vehicle_data
-
-def add_vehicle_service(request: VehicleDataRequest):
+def add_vehicle_service(request_data: dict):
     logger.info("ADD VEHICLE SERVICE HIT")
-    data = request.model_dump()
-    required_fields = [
-        "company_id",
-        "name",
-        "license_plate",
-        "brand",
-        "model",
-        "year"
-    ]
-    check_missing_fields(data, required_fields)
+
+    request_data = {k: v for k, v in request_data.items() if v is not None}
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
-            VehicleRepository.add(cursor, data)
-            conn.commit()
-    return "Vehicle added successfully"
 
-def edit_vehicle_service(request: VehicleDataRequest):
+            vehicle_id: int = VehicleRepository.add(cursor, request_data)
+
+        conn.commit()
+
+    if vehicle_id:
+        return vehicle_id
+
+    else:
+        return None
+
+def edit_vehicle_service(request_data: dict):
     logger.info("EDIT VEHICLE SERVICE HIT")
-    data = request.model_dump()
-    required_fields = ["vehicle_id"]
-    check_missing_fields(data, required_fields)
+
+    request_data = {k: v for k, v in request_data.items() if v is not None}
+
+    request_company_id: int = request_data.get("company_id")
+    request_vehicle_id: int = request_data.get("vehicle_id")
+
+    query_filter = {
+        "company_id": {"type": "index",
+                       "value": request_company_id,
+                       "table": "Vehicles"},
+        "vehicle_id": {"type": "index",
+                    "value": request_vehicle_id,
+                    "table": "Vehicles"}
+    }
+
+    query_data = {
+        "table": "Vehicles",
+        "filter": query_filter,
+        "data": request_data
+    }
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
-            vehicle_data: list = VehicleRepository.fetch(cursor, data, None)
+
+            vehicle_data: dict = VehicleRepository.fetch(cursor, query_filter)
+
             if not vehicle_data:
                 return "vehicle_id has no data"
 
-            logger.info(f"Query result: {vehicle_data}")
+            VehicleRepository.edit(cursor, query_data)
 
-            VehicleRepository.edit(cursor, data)
-            conn.commit()
+        conn.commit()
+
     return "Vehicle edited successfully"
 
-def remove_vehicle_service(request: VehicleDataRequest):
+def remove_vehicle_service(request_data: dict):
     logger.info("REMOVE VEHICLE SERVICE HIT")
-    data = request.model_dump()
-    required_fields = ["vehicle_id"]
-    check_missing_fields(data, required_fields)
+
+    request_vehicle_id: int = request_data.get("vehicle_id")
+
+    query_filter = {
+        "vehicle_id": {"type": "index",
+                       "value": request_vehicle_id,
+                       "table": "Vehicles"}
+    }
+
+    query_data = {
+        "table": "Vehicles",
+        "filter": query_filter
+    }
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
-            vehicle_data: dict = VehicleRepository.fetch(cursor, data, None)
+
+            vehicle_data: dict = VehicleRepository.fetch(cursor, query_filter)
+
             if not vehicle_data:
                 return "vehicle_id has no data"
 
-            VehicleRepository.remove(cursor, data)
-            conn.commit()
+            VehicleRepository.remove(cursor, query_data)
+
+        conn.commit()
+
     return "Vehicle removed successfully"

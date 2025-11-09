@@ -3,7 +3,7 @@ from pydantic import BaseModel
 class VehicleDataRequest(BaseModel):
     vehicle_id: int | None = None
     company_id: int | None = None
-    name: str | None = None
+    vehicle_name: str | None = None
     license_plate: str | None = None
     brand: str | None = None
     model: str | None = None

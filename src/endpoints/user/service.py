@@ -100,7 +100,9 @@ def remove_user_service(request_data: dict):
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
+
             user_data: dict = UserRepository.fetch(cursor, query_filter)
+
             if not user_data:
                 return "user_id has no data"
 

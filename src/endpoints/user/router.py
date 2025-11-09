@@ -22,10 +22,10 @@ def fetch_user(
     }
 
     try:
-        result = fetch_user_service(request_data)
+        user_data = fetch_user_service(request_data)
 
-        if result:
-            return JSONResponse(status_code=status.HTTP_200_OK, content=result)
+        if user_data:
+            return JSONResponse(status_code=status.HTTP_200_OK, content={"data": user_data})
 
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
@@ -44,8 +44,6 @@ def add_user(
 
     request_data = request.model_dump()
     request_data["company_id"] = company_id
-
-    print(request_data)
 
     try:
         user_id: int = add_user_service(request_data)
@@ -95,7 +93,7 @@ async def edit_user(user_id: int, company_id: int = Form(...), file_type: str = 
         file_type=file_type,
         attachment_type="profile_picture",
         upload_date = str(datetime.now())
-    )
+    ).model_dump()
 
     try:
         attachment_id = add_attachment_service(attachment_data)
@@ -122,7 +120,7 @@ def remove_user(user_id: int):
     try:
         remove_user_service(request_data)
 
-        Response(status_code=status.HTTP_204_NO_CONTENT)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -10,8 +10,6 @@ def fetch_route_service(request_data: dict) -> dict:
 
     request_data = {k: v for k, v in request_data.items() if v is not None}
 
-    print(request_data)
-
     query_filter = {
         "route_id": {"type": "index",
                      "value": request_data.get("route_id"),
