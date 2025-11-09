@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from hashlib import sha256
+from reverse_geocode import search
 
 
 def get_hash(data: str | bytes | int | float) -> str:
@@ -32,3 +33,7 @@ def check_missing_fields(data: dict, required_fields: list) -> None:
             detail=f"Request missing required field(s): {', '.join(missing)}"
         )
 
+def get_geocode_data(latitude: float, longitude: float) -> dict:
+    coordinates = latitude, longitude
+
+    return search([coordinates])[0]

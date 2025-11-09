@@ -10,7 +10,7 @@ class RouteRepository:
 
     @staticmethod
     def fetch(cursor, query_filter: dict) -> dict | None:
-        logger.info("FETCH ATTACHMENT REPOSITORY HIT")
+        logger.info("FETCH ROUTE REPOSITORY HIT")
 
         try:
             select_stmt = AssembleStatement.get_route_data(query_filter)

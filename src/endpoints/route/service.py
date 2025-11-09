@@ -2,7 +2,7 @@ from src.core.logging_config import logger
 from src.core.database import start_connection, start_cursor
 from .repository import RouteRepository
 from src.core.config import settings
-from reverse_geocode import search
+from src.core.utils import get_geocode_data
 
 
 def fetch_route_service(request_data: dict) -> dict:
@@ -50,21 +50,22 @@ def add_route_service(data: dict):
     route_data: dict = data
     subroutes: list = route_data.pop("subroutes")
 
-
     subroutes_data: dict = {}
     for idx, entry in enumerate(subroutes):
         entry_data = list(entry.values())
 
         subroute_type, address, latitude, longitude = entry_data
 
-        coordinates = (latitude, longitude)
+        geocode_data = get_geocode_data(latitude, longitude)
 
-        geocode_search = search([coordinates])[0]
-
-        country = geocode_search['country']
-        state = geocode_search['state']
-        city = geocode_search['county']
-        district = geocode_search['city'] # returns the neighborhood
+        country = geocode_data['country']
+        state = geocode_data['state'] if geocode_data['state'] else None
+        if geocode_data.get("county"):
+            city = geocode_data['county']
+            district = geocode_data['city']
+        else:
+            city = geocode_data['city']
+            district = None
 
         subroutes_data[idx+1] = {
             "subroute_type": subroute_type,
