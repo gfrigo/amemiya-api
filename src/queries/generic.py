@@ -21,6 +21,12 @@ def assemble_individual_condition(label, specs):
             return None
         return getattr(element_table, label).between(start, end)
 
+    elif element_type == "value_range":
+        start, end = element_value
+        if start is None or end is None:
+            return None
+        return getattr(element_table, label).between(start, end)
+
     elif element_type == "similarity":
         if element_value is None:
             return None

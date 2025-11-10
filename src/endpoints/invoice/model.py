@@ -1,14 +1,13 @@
 from pydantic import BaseModel
 
-class GeopointDataRequest(BaseModel):
+class InvoiceDataRequest(BaseModel):
+    invoice_id: int | None = None
     company_id: int | None = None
-    point_id: int | None = None
     user_id: int | None = None
-    label: str | None = None
-    longitude: float | None = None
-    latitude: float | None = None
-    geopoint_type: str | None = None
-    country: str | None = None
-    state: str | None = None
-    city: str | None = None
-    district: str | None = None
+    attachment_id: int | None = None
+    cost: float | None = None
+    purchase_type: str | None = None
+    invoice_origin: str | None = None
+    invoice_number: str | None = None
+    invoice_series: str | None = None
+    emission_date: str | None = None

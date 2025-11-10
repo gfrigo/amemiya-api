@@ -1,100 +1,107 @@
 from src.core.logging_config import logger
 from src.core.database import start_connection, start_cursor
-from .repository import GeopointRepository
+from .repository import InvoiceRepository
 from src.core.config import settings
 from src.core.utils import get_geocode_data
 
 
-def fetch_geopoint_service(request_data: dict) -> dict:
-    logger.info("FETCH GEOPOINT SERVICE HIT")
+def fetch_invoice_service(request_data: dict) -> list:
+    logger.info("FETCH INVOICE SERVICE HIT")
 
     request_data = {k: v for k, v in request_data.items() if v is not None}
 
     query_filter = {
         "company_id": {"type": "index",
-                     "value": request_data.get("company_id"),
-                     "table": "Geopoints"}
+                       "value": request_data.get("company_id"),
+                       "table": "Invoices"},
+        "user_id": {"type": "index",
+                    "value": request_data.get("user_id"),
+                    "table": "Invoices"},
+        "cost": {"type": "value_range",
+                 "value": (request_data.get("cost_range_lower"), request_data.get("cost_range_higher")),
+                 "table": "Invoices"},
+        "purchase_type": {"type": "index",
+                          "value": request_data.get("purchase_type"),
+                          "table": "Invoices"},
+        "invoice_origin": {"type": "similarity",
+                           "value": request_data.get("invoice_origin"),
+                           "table": "Invoices"},
+        "invoice_number": {"type": "similarity",
+                           "value": request_data.get("contained_invoice_number"),
+                           "table": "Invoices"},
+        "invoice_series": {"type": "similarity",
+                           "value": request_data.get("contained_invoice_series"),
+                           "table": "Invoices"},
+        "emission_date": {"type": "date_range",
+                          "value": (request_data.get("emission_date_range_start"), request_data.get("emission_date_range_end")),
+                          "table": "Invoices"}
     }
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
 
-            geopoints: dict = GeopointRepository.fetch(cursor, query_filter)
+            invoices: list = InvoiceRepository.fetch(cursor, query_filter)
 
-    return geopoints
+    return invoices
 
-def add_geopoint_service(request_data: dict):
-    logger.info("ADD GEOPOINT SERVICE HIT")
+def add_invoice_service(request_data: dict):
+    logger.info("ADD INVOICE SERVICE HIT")
 
     request_data = {k: v for k, v in request_data.items() if v is not None}
 
-    latitude, longitude = request_data.get("latitude"), request_data.get("longitude")
+    request_invoice_number = request_data.get("invoice_number")
+    request_invoice_series = request_data.get("invoice_series")
 
-    geocode_data = get_geocode_data(latitude, longitude)
+    if len(request_invoice_number) < 9:
+        request_invoice_number = "0" * (9 - len(request_invoice_number)) + request_invoice_number
+        request_data["invoice_number"] = request_invoice_number
 
-    country = geocode_data['country']
-    state = geocode_data['state'] if geocode_data['state'] else None
-    if geocode_data.get("county"):
-        city = geocode_data['county']
-        district = geocode_data['city']
-    else:
-        city = geocode_data['city']
-        district = None
+    elif len(request_invoice_number) > 9:
+        raise ValueError("Invoice number is too long")
 
-    request_data["country"] = country
-    request_data["state"] = state
-    request_data["city"] = city
-    request_data["district"] = district
+    duplicate_query_filter = {
+        "invoice_number": {"type": "index",
+                           "value": request_invoice_number,
+                           "table": "Invoices"},
+        "invoice_series": {"type": "index",
+                           "value": request_invoice_series,
+                           "table": "Invoices"},
+    }
+
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
+            existing_invoice_data: dict = InvoiceRepository.fetch(cursor, duplicate_query_filter)
 
-            geopoint_id: int = GeopointRepository.add(cursor, request_data)
+            if existing_invoice_data:
+                raise ValueError(f"Invoice for {request_invoice_number}-{request_invoice_series} already exists")
+
+            invoice_id: int = InvoiceRepository.add(cursor, request_data)
 
         conn.commit()
         logger.info("Changes committed")
 
-    if geopoint_id:
-        return geopoint_id
+    if invoice_id:
+        return invoice_id
 
     else:
         return None
 
-def edit_geopoint_service(request_data: dict):
-    logger.info("EDIT GEOPOINT SERVICE HIT")
+def edit_invoice_service(request_data: dict):
+    logger.info("EDIT INVOICE SERVICE HIT")
 
-    request_data = {k: v for k, v in request_data.items() if v is not None}
+    request_data = {k: v for k, v in request_data.items() if v is not None and k != "attachment_id"}
 
-    request_geopoint_id: int = request_data.get("geopoint_id")
-
-    request_latitude: float = request_data.get("latitude")
-    request_longitude: float = request_data.get("longitude")
-
-    if request_latitude and request_longitude:
-        geocode_data = get_geocode_data(request_latitude, request_longitude)
-
-        country = geocode_data['country']
-        state = geocode_data['state'] if geocode_data['state'] else None
-        if geocode_data.get("county"):
-            city = geocode_data['county']
-            district = geocode_data['city']
-        else:
-            city = geocode_data['city']
-            district = None
-
-        request_data["country"] = country
-        request_data["state"] = state
-        request_data["city"] = city
-        request_data["district"] = district
+    request_invoice_id: int = request_data.get("invoice_id")
 
     query_filter = {
-        "geopoint_id": {"type": "index",
-                        "value": request_geopoint_id,
-                        "table": "Geopoints"}
+        "invoice_id": {"type": "index",
+                       "value": request_invoice_id,
+                       "table": "Invoices"}
     }
 
     query_data = {
-        "table": "Geopoints",
+        "table": "Invoices",
         "filter": query_filter,
         "data": request_data
     }
@@ -102,36 +109,36 @@ def edit_geopoint_service(request_data: dict):
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
 
-            geopoint_data: dict = GeopointRepository.fetch(cursor, query_filter)
+            invoice_data: dict = InvoiceRepository.fetch(cursor, query_filter)
 
-            if not geopoint_data:
-                raise IndexError("Geopoint ID has no data")
+            if not invoice_data:
+                raise IndexError("Invoice ID has no data")
 
-            GeopointRepository.edit(cursor, query_data)
+            InvoiceRepository.edit(cursor, query_data)
 
         conn.commit()
 
-def remove_geopoint_service(geopoint_id: int):
-    logger.info("REMOVE GEOPOINT SERVICE HIT")
+def remove_invoice_service(invoice_id: int):
+    logger.info("REMOVE INVOICE SERVICE HIT")
 
     query_filter = {
-        "geopoint_id": {"type": "index",
-                        "value": geopoint_id,
-                        "table": "Geopoints"}
+        "invoice_id": {"type": "index",
+                        "value": invoice_id,
+                        "table": "Invoices"}
     }
 
     query_data = {
-        "table": "Geopoints",
+        "table": "Invoices",
         "filter": query_filter
     }
 
     with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
         with start_cursor(conn) as cursor:
-            geopoint_data: dict = GeopointRepository.fetch(cursor, query_filter)
+            invoice_data: dict = InvoiceRepository.fetch(cursor, query_filter)
 
-            if not geopoint_data:
-                raise IndexError("Geopoint ID has no data")
+            if not invoice_data:
+                raise IndexError("Invoice ID has no data")
 
-            GeopointRepository.remove(cursor, query_data)
+            InvoiceRepository.remove(cursor, query_data)
 
         conn.commit()

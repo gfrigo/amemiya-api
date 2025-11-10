@@ -6,14 +6,14 @@ from base64 import b64encode
 from src.endpoints import generic_repository
 
 
-class GeopointRepository:
+class InvoiceRepository:
 
     @staticmethod
-    def fetch(cursor, query_filter: dict) -> dict | None:
-        logger.info("FETCH GEOPOINT REPOSITORY HIT")
+    def fetch(cursor, query_filter: dict) -> dict | list | None:
+        logger.info("FETCH INVOICE REPOSITORY HIT")
 
         try:
-            select_stmt = AssembleStatement.get_geopoint_data(query_filter)
+            select_stmt = AssembleStatement.get_invoice_data(query_filter)
             logger.info(f"To execute: {select_stmt}")
 
             cursor.execute(select_stmt)
@@ -24,54 +24,47 @@ class GeopointRepository:
             if not result:
                 return None
 
-            routes: dict = {}
-            origin_points: list = []
-            destiny_points: list = []
+            data: list = []
             for entry in result:
                 (
-                    geopoint_id,
+                    invoice_id,
                     company_id,
                     company_name,
-                    point_id,
                     user_id,
                     user_name,
-                    label,
-                    longitude,
-                    latitude,
-                    geopoint_type,
-                    country,
-                    state,
-                    city,
-                    district
+                    attachment_id,
+                    file_data,
+                    file_type,
+                    upload_date,
+                    cost,
+                    purchase_type,
+                    invoice_origin,
+                    invoice_number,
+                    invoice_series,
+                    emission_date
                 ) = entry
 
-                geopoint_data = {
-                    "geopoint_id": geopoint_id,
+                encoded_file_data = b64encode(file_data).decode("utf-8")
+
+                data.append({
+                    "invoice_id": invoice_id,
                     "company_id": company_id,
                     "company_name": company_name,
-                    "point_id": point_id,
                     "user_id": user_id,
                     "user_name": user_name,
-                    "label": label,
-                    "latitude": latitude,
-                    "longitude": longitude,
-                    "country": country,
-                    "state": state,
-                    "city": city,
-                    "district": district
-                }
+                    "attachment_id": attachment_id,
+                    "file_data": encoded_file_data,
+                    "file_type": file_type,
+                    "upload_date": str(upload_date),
+                    "cost": float(cost),
+                    "purchase_type": purchase_type,
+                    "invoice_origin": invoice_origin,
+                    "invoice_number": invoice_number,
+                    "invoice_series": invoice_series,
+                    "emission_date": str(emission_date)
+                })
 
-                if geopoint_type == "origin":
-                    origin_points.append(geopoint_data)
-                elif geopoint_type == "destiny":
-                    destiny_points.append(geopoint_data)
-
-            geopoints: dict = {
-                "origin": origin_points if origin_points else None,
-                "destiny": destiny_points if destiny_points else None
-            }
-
-            return geopoints
+            return data
 
         except IndexError:
             return None
@@ -79,23 +72,10 @@ class GeopointRepository:
 
     @staticmethod
     def add(cursor, data: dict):
-        logger.info("ADD GEOPOINT REPOSITORY HIT")
-
-        query_filter = {
-            "company_id": {"type": "index",
-                         "value": data.get("company_id"),
-                         "table": "Geopoints"}
-        }
-
-        raw_last_entry = get_last_entry(cursor, "Geopoints", "point_id", query_filter)
-        last_point_id = 0 if raw_last_entry is None else raw_last_entry[0]
-
-        data["point_id"] = 1 if last_point_id is None else last_point_id + 1
-
-        values = list(data.values())
+        logger.info("ADD INVOICE REPOSITORY HIT")
 
         try:
-            insert_stmt = AssembleStatement.add_geopoint(values)
+            insert_stmt = AssembleStatement.add_invoice(data)
             logger.info(f"To execute: {insert_stmt}")
 
             cursor.execute(insert_stmt)
