@@ -17,14 +17,18 @@ def assemble_individual_condition(label, specs):
 
     elif element_type == "date_range":
         start, end = element_value
-        if start is None or end is None:
+        if start is None and end is None:
             return None
+        start = "0001-01-01" if start is None else start
+        end = "9999-12-31" if end is None else end
         return getattr(element_table, label).between(start, end)
 
     elif element_type == "value_range":
         start, end = element_value
-        if start is None or end is None:
+        if start is None and end is None:
             return None
+        start = 0 if start is None else start
+        end = 999_999_999 if end is None else end
         return getattr(element_table, label).between(start, end)
 
     elif element_type == "similarity":
