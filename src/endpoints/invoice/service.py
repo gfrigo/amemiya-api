@@ -2,7 +2,6 @@ from src.core.logging_config import logger
 from src.core.database import start_connection, start_cursor
 from .repository import InvoiceRepository
 from src.core.config import settings
-from src.core.utils import get_geocode_data
 
 
 def fetch_invoice_service(request_data: dict) -> list:
@@ -59,6 +58,9 @@ def add_invoice_service(request_data: dict):
     elif len(request_invoice_number) > 9:
         raise ValueError("Invoice number is too long")
 
+    if not request_invoice_number.isnumeric():
+        raise ValueError("Invoice number is not numeric")
+
     duplicate_query_filter = {
         "invoice_number": {"type": "index",
                            "value": request_invoice_number,
@@ -91,6 +93,21 @@ def edit_invoice_service(request_data: dict):
     logger.info("EDIT INVOICE SERVICE HIT")
 
     request_data = {k: v for k, v in request_data.items() if v is not None and k != "attachment_id"}
+
+    request_invoice_number = request_data.get("invoice_number")
+
+    if request_invoice_number:
+        if len(request_invoice_number) < 9:
+            request_invoice_number = "0" * (9 - len(request_invoice_number)) + request_invoice_number
+            request_data["invoice_number"] = request_invoice_number
+
+        elif len(request_invoice_number) > 9:
+            raise ValueError("Invoice number is too long")
+
+        if not request_invoice_number.isnumeric():
+            raise ValueError("Invoice number is not numeric")
+
+        request_data["invoice_number"] = request_invoice_number
 
     request_invoice_id: int = request_data.get("invoice_id")
 
