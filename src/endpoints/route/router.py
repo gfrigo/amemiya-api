@@ -1,9 +1,10 @@
+from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
 from fastapi.responses import Response, JSONResponse
-from src.core.logging_config import logger
+
+from src.core.config import logger
 from .model import RouteDataRequest
 from .service import fetch_route_service, add_route_service, edit_route_service, remove_route_service
-from datetime import datetime
 
 router = APIRouter(prefix="/route", tags=["Route"])
 

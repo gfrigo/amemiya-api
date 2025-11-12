@@ -1,9 +1,9 @@
-from src.core.logging_config import logger
-from src.register import Register
-from src.core.database import Execute
-from .queries import AssembleStatement
-from src.endpoints import generic_repository
 from base64 import b64encode
+
+from src.core.database import Execute
+from src.core.config import logger
+from src.endpoints import generic_repository
+from .queries import AssembleStatement
 
 
 class UserRepository:

@@ -1,11 +1,13 @@
+from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status, Path, Query
 from fastapi.responses import Response, JSONResponse
-from src.core.logging_config import logger
-from .model import MaintenanceDataRequest
+
+from src.core.config import logger
 from src.endpoints.attachment.model import AttachmentDataRequest
-from .service import fetch_maintenance_service, add_maintenance_service, edit_maintenance_service, remove_maintenance_service
 from src.endpoints.attachment.service import add_attachment_service
-from datetime import datetime
+from .model import MaintenanceDataRequest
+from .service import fetch_maintenance_service, add_maintenance_service, edit_maintenance_service, \
+    remove_maintenance_service
 
 router = APIRouter(prefix="/maintenance", tags=["Maintenance"])
 

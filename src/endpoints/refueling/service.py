@@ -1,7 +1,7 @@
-from src.core.logging_config import logger
-from src.core.database import start_connection, start_cursor
-from .repository import RefuelingRepository
 from src.core.config import settings
+from src.core.database import start_connection, start_cursor
+from src.core.config import logger
+from .repository import RefuelingRepository
 
 
 def fetch_refueling_service(request_data: dict) -> list:
@@ -42,7 +42,7 @@ def fetch_refueling_service(request_data: dict) -> list:
                            "table": "Refuelings"}
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             refuelings: list = RefuelingRepository.fetch(cursor, query_filter)
@@ -54,7 +54,7 @@ def add_refueling_service(request_data: dict):
 
     request_data = {k: v for k, v in request_data.items() if v is not None}
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             refueling_id: int = RefuelingRepository.add(cursor, request_data)
@@ -87,7 +87,7 @@ def edit_refueling_service(request_data: dict):
         "data": request_data
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             refueling_data: dict = RefuelingRepository.fetch(cursor, query_filter)
@@ -113,7 +113,7 @@ def remove_refueling_service(refueling_id: int):
         "filter": query_filter
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
             refueling_data: dict = RefuelingRepository.fetch(cursor, query_filter)
 

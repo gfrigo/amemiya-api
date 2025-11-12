@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse, Response
-from src.core.logging_config import logger
+
+from src.core.config import logger
 from .model import VehicleDataRequest
 from .service import fetch_vehicle_service, add_vehicle_service, edit_vehicle_service, remove_vehicle_service
 

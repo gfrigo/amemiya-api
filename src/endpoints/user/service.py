@@ -1,9 +1,8 @@
-from src.core.logging_config import logger
-from src.core.database import start_connection, start_cursor
-from src.endpoints.user.repository import UserRepository
-from src.endpoints.user.model import UserDataRequest
-from src.core.utils import check_missing_fields
 from src.core.config import settings
+from src.core.database import start_connection, start_cursor
+from src.core.config import logger
+from src.endpoints.user.model import UserDataRequest
+from src.endpoints.user.repository import UserRepository
 
 
 def fetch_user_service(request_data: dict) -> dict | list:
@@ -21,7 +20,7 @@ def fetch_user_service(request_data: dict) -> dict | list:
                     "table": "Users"}
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
             result: dict | list = UserRepository.fetch(cursor, query_filter)
 
@@ -32,7 +31,7 @@ def add_user_service(request_data: dict):
 
     request_data = {k: v for k, v in request_data.items() if v is not None}
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             user_id: int = UserRepository.add(cursor, request_data)
@@ -68,7 +67,7 @@ def edit_user_service(request_data: dict):
         "data": request_data
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             user_data: dict = UserRepository.fetch(cursor, query_filter)
@@ -98,7 +97,7 @@ def remove_user_service(request_data: dict):
         "filter": query_filter
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             user_data: dict = UserRepository.fetch(cursor, query_filter)

@@ -1,8 +1,9 @@
+import logging
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import Response, JSONResponse
+
 from .model import LoginDataRequest
 from .service import fetch_login_service
-import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("uvicorn")

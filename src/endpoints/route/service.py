@@ -1,8 +1,8 @@
-from src.core.logging_config import logger
-from src.core.database import start_connection, start_cursor
-from .repository import RouteRepository
 from src.core.config import settings
+from src.core.database import start_connection, start_cursor
+from src.core.config import logger
 from src.core.utils import get_geocode_data
+from .repository import RouteRepository
 
 
 def fetch_route_service(request_data: dict) -> dict:
@@ -37,7 +37,7 @@ def fetch_route_service(request_data: dict) -> dict:
                         "table": "Routes"}
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             result: dict = RouteRepository.fetch(cursor, query_filter)
@@ -80,7 +80,7 @@ def add_route_service(data: dict):
 
     route_data["subroutes"] = subroutes_data
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             route_id = RouteRepository.add(cursor, data)
@@ -115,7 +115,7 @@ def edit_route_service(request_data: dict):
         "data": request_data
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             route_data: dict = RouteRepository.fetch(cursor, query_filter)
@@ -160,7 +160,7 @@ def remove_route_service(route_id: int):
         "filter": query_filter
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
             route_data: dict = RouteRepository.fetch(cursor, query_filter)
 

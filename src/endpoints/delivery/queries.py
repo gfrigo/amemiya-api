@@ -1,7 +1,7 @@
-from pypika import MySQLQuery, Table
 from operator import and_
-from src.queries.generic import assemble_condition
+from pypika import MySQLQuery, Table
 
+from src.endpoints.generic_repository import assemble_condition
 
 DELIVERIES = Table("Deliveries")
 COMPANIES = Table("Companies")

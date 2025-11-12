@@ -1,10 +1,9 @@
-from src.core.logging_config import logger
-from src.core.database import start_connection, start_cursor
-from .repository import AttachmentRepository
-from .model import AttachmentDataRequest
-from src.endpoints import generic_repository
-from src.core.utils import check_missing_fields
 from src.core.config import settings
+from src.core.database import start_connection, start_cursor
+from src.core.config import logger
+from src.endpoints import generic_repository
+from .model import AttachmentDataRequest
+from .repository import AttachmentRepository
 
 
 def fetch_attachment_service(company_id: int,
@@ -30,7 +29,7 @@ def fetch_attachment_service(company_id: int,
                             "table": "Attachments"}
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             result: dict = AttachmentRepository.fetch(cursor, query_filter)
@@ -42,7 +41,7 @@ def add_attachment_service(request_data: dict):
 
     request_data = {k: v for k, v in request_data.items() if v is not None}
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             attachment_id: int = AttachmentRepository.add(cursor, request_data)
@@ -75,7 +74,7 @@ def edit_attachment_service(request_data: dict):
         "data": request_data
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             attachment_data: dict = AttachmentRepository.fetch(cursor, query_filter)
@@ -102,7 +101,7 @@ def remove_attachment_service(attachment_id: int):
         "filter": query_filter
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
             attachment_data: dict = AttachmentRepository.fetch(cursor, query_filter)
 

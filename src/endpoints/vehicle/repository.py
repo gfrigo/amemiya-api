@@ -1,9 +1,8 @@
-from src.core.logging_config import logger
-from src.register import Register
 from pypika import MySQLQuery, Table, Parameter
-from src.map import fetch, add, edit, remove
-from .queries import AssembleStatement
+
+from src.core.config import logger
 from src.endpoints import generic_repository
+from .queries import AssembleStatement
 
 
 class VehicleRepository:

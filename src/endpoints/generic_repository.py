@@ -1,8 +1,60 @@
 from pypika import MySQLQuery, Table, Order
-from src.queries.generic import assemble_condition
-from src.core.database import Statements
-from src.core.logging_config import logger
-from src.queries.generic import assemble_condition
+
+from src.core.config import logger
+from functools import reduce
+from operator import and_
+from pypika import Table
+
+
+def assemble_individual_condition(label, specs):
+    if not isinstance(specs, dict):
+        return None
+
+    element_type = specs.get("type")
+    element_value = specs.get("value")
+    element_table = Table(specs.get("table"))
+
+    if element_type == "index":
+        if element_value is None:
+            return None
+        return getattr(element_table, label) == element_value
+
+    elif element_type == "date_range":
+        start, end = element_value
+        if start is None and end is None:
+            return None
+        start = "0001-01-01" if start is None else start
+        end = "9999-12-31" if end is None else end
+        return getattr(element_table, label).between(start, end)
+
+    elif element_type == "value_range":
+        start, end = element_value
+        if start is None and end is None:
+            return None
+        start = 0 if start is None else start
+        end = 999_999_999 if end is None else end
+        return getattr(element_table, label).between(start, end)
+
+    elif element_type == "similarity":
+        if element_value is None:
+            return None
+        return getattr(element_table, label).like(f"%{element_value}%")
+
+
+def assemble_condition(query_filter: dict):
+    conditions = []
+
+    for k, v in query_filter.items():
+        stmt = assemble_individual_condition(k, v)
+
+        if stmt is not None:
+            conditions.append(stmt)
+
+    if not conditions:
+        return None
+
+    return reduce(and_, conditions)
+
 
 
 ATTACHMENTS = Table("Attachments")
@@ -73,7 +125,6 @@ def edit(update_data: dict):
         stmt = stmt.where(condition)
 
     return stmt.get_sql()
-
 
 def remove(delete_data: dict):
     logger.info("REMOVE GENERIC REPOSITORY HIT")

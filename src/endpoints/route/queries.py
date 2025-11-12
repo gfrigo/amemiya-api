@@ -1,6 +1,7 @@
-#pylint: disable-all
+
 from pypika import MySQLQuery, Table
-from src.queries.generic import assemble_condition
+
+from src.endpoints.generic_repository import assemble_condition
 
 ROUTES = Table("Routes")
 COMPANIES = Table("Companies")

@@ -1,8 +1,8 @@
-from src.core.logging_config import logger
-from src.core.database import start_connection, start_cursor
-from .repository import GeopointRepository
 from src.core.config import settings
+from src.core.database import start_connection, start_cursor
+from src.core.config import logger
 from src.core.utils import get_geocode_data
+from .repository import GeopointRepository
 
 
 def fetch_geopoint_service(request_data: dict) -> dict:
@@ -16,7 +16,7 @@ def fetch_geopoint_service(request_data: dict) -> dict:
                      "table": "Geopoints"}
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             geopoints: dict = GeopointRepository.fetch(cursor, query_filter)
@@ -46,7 +46,7 @@ def add_geopoint_service(request_data: dict):
     request_data["city"] = city
     request_data["district"] = district
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             geopoint_id: int = GeopointRepository.add(cursor, request_data)
@@ -99,7 +99,7 @@ def edit_geopoint_service(request_data: dict):
         "data": request_data
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             geopoint_data: dict = GeopointRepository.fetch(cursor, query_filter)
@@ -125,7 +125,7 @@ def remove_geopoint_service(geopoint_id: int):
         "filter": query_filter
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
             geopoint_data: dict = GeopointRepository.fetch(cursor, query_filter)
 

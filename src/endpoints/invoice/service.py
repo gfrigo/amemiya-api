@@ -1,7 +1,7 @@
-from src.core.logging_config import logger
-from src.core.database import start_connection, start_cursor
-from .repository import InvoiceRepository
 from src.core.config import settings
+from src.core.database import start_connection, start_cursor
+from src.core.config import logger
+from .repository import InvoiceRepository
 
 
 def fetch_invoice_service(request_data: dict) -> list:
@@ -36,7 +36,7 @@ def fetch_invoice_service(request_data: dict) -> list:
                           "table": "Invoices"}
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             invoices: list = InvoiceRepository.fetch(cursor, query_filter)
@@ -71,7 +71,7 @@ def add_invoice_service(request_data: dict):
     }
 
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
             existing_invoice_data: dict = InvoiceRepository.fetch(cursor, duplicate_query_filter)
 
@@ -123,7 +123,7 @@ def edit_invoice_service(request_data: dict):
         "data": request_data
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             invoice_data: dict = InvoiceRepository.fetch(cursor, query_filter)
@@ -149,7 +149,7 @@ def remove_invoice_service(invoice_id: int):
         "filter": query_filter
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
             invoice_data: dict = InvoiceRepository.fetch(cursor, query_filter)
 

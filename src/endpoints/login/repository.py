@@ -1,6 +1,7 @@
-from .queries import AssembleStatement
-from src.core.logging_config import logger
 from base64 import b64encode
+
+from src.core.config import logger
+from .queries import AssembleStatement
 
 
 class LoginRepository:

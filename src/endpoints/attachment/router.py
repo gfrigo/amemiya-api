@@ -1,9 +1,11 @@
+from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
 from fastapi.responses import Response, JSONResponse
-from src.core.logging_config import logger
+
+from src.core.config import logger
 from .model import AttachmentDataRequest
-from .service import fetch_attachment_service, add_attachment_service, edit_attachment_service, remove_attachment_service
-from datetime import datetime
+from .service import fetch_attachment_service, add_attachment_service, edit_attachment_service, \
+    remove_attachment_service
 
 router = APIRouter(prefix="/attachment", tags=["Attachment"])
 

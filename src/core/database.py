@@ -3,6 +3,7 @@ from contextlib import contextmanager
 
 
 class Statements:
+
     @staticmethod
     def get_where(stmt: str | tuple | dict) -> str:
         if not stmt:
@@ -36,12 +37,12 @@ class Statements:
             return ""
 
 @contextmanager
-def start_connection(db_host:str, db_user:str, db_password:str, db_schema:str=None):
+def start_connection(credentials: dict):
     conn = mysql.connector.connect(
-        host=db_host,
-        user=db_user,
-        password=db_password,
-        database=db_schema
+        host=credentials["host"],
+        user=credentials["user"],
+        password=credentials["password"],
+        database=credentials.get("schema")
     )
     try:
         yield conn

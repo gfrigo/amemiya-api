@@ -1,9 +1,10 @@
+from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status, Path
 from fastapi.responses import Response, JSONResponse
-from src.core.logging_config import logger
+
+from src.core.config import logger
 from .model import GeopointDataRequest
 from .service import fetch_geopoint_service, add_geopoint_service, edit_geopoint_service, remove_geopoint_service
-from datetime import datetime
 
 router = APIRouter(prefix="/geopoint", tags=["Geopoint"])
 

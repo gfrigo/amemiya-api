@@ -1,7 +1,8 @@
+from datetime import datetime
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
+
 from main import logger
-from datetime import datetime
 
 router = APIRouter(prefix="/server", tags=["Server"])
 

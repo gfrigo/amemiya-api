@@ -1,11 +1,12 @@
+from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
 from fastapi.responses import Response, JSONResponse
-from src.core.logging_config import logger
-from .model import UserDataRequest
-from .service import fetch_user_service, add_user_service, edit_user_service, remove_user_service
+
+from src.core.config import logger
 from src.endpoints.attachment.model import AttachmentDataRequest
 from src.endpoints.attachment.service import add_attachment_service
-from datetime import datetime
+from .model import UserDataRequest
+from .service import fetch_user_service, add_user_service, edit_user_service, remove_user_service
 
 router = APIRouter(prefix="/user", tags=["User"])
 

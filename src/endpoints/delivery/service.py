@@ -1,12 +1,13 @@
-from src.core.logging_config import logger
-from src.core.database import start_connection, start_cursor
-from .repository import DeliveryRepository
-from .model import DeliveryDataRequest
-from src.endpoints import generic_repository
-from src.core.config import settings
 from secrets import token_hex
+
+from src.core.config import settings
+from src.core.database import start_connection, start_cursor
+from src.core.config import logger
 from src.core.utils import get_geocode_data
+from src.endpoints import generic_repository
 from src.endpoints.geopoint.repository import GeopointRepository
+from .model import DeliveryDataRequest
+from .repository import DeliveryRepository
 
 
 def fetch_delivery_service(request_data: dict) -> list:
@@ -86,7 +87,7 @@ def fetch_delivery_service(request_data: dict) -> list:
                             "table": "Deliveries"}
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             result: list = DeliveryRepository.fetch(cursor, query_filter)
@@ -120,7 +121,7 @@ def add_delivery_service(request_data: dict):
                        "table": "Companies"}
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
             company_code: str = generic_repository.fetch(cursor, "Companies", "company_code", query_filter)[0][0]
             if not company_code:
@@ -242,7 +243,7 @@ def edit_delivery_service(request_data: dict):
         "data": request_data
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
             delivery_data: dict = DeliveryRepository.fetch(cursor, query_filter)
 
@@ -267,7 +268,7 @@ def remove_delivery_service(delivery_id: int):
         "filter": query_filter
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
             delivery_data: dict = DeliveryRepository.fetch(cursor, query_filter)
 

@@ -1,7 +1,7 @@
-from src.core.logging_config import logger
-from src.core.database import start_connection, start_cursor
-from .repository import MaintenanceRepository
 from src.core.config import settings
+from src.core.database import start_connection, start_cursor
+from src.core.config import logger
+from .repository import MaintenanceRepository
 
 
 def fetch_maintenance_service(request_data: dict) -> list:
@@ -36,7 +36,7 @@ def fetch_maintenance_service(request_data: dict) -> list:
                              "table": "Maintenances"}
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             maintenances: list = MaintenanceRepository.fetch(cursor, query_filter)
@@ -48,7 +48,7 @@ def add_maintenance_service(request_data: dict):
 
     request_data = {k: v for k, v in request_data.items() if v is not None}
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             maintenance_id: int = MaintenanceRepository.add(cursor, request_data)
@@ -81,7 +81,7 @@ def edit_maintenance_service(request_data: dict):
         "data": request_data
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             maintenance_data: dict = MaintenanceRepository.fetch(cursor, query_filter)
@@ -107,7 +107,7 @@ def remove_maintenance_service(maintenance_id: int):
         "filter": query_filter
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
             maintenance_data: dict = MaintenanceRepository.fetch(cursor, query_filter)
 

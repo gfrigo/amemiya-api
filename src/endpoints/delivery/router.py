@@ -1,9 +1,10 @@
+from datetime import datetime
 from fastapi import APIRouter, UploadFile, Path, Query, Body, File, Form, HTTPException, status
 from fastapi.responses import Response, JSONResponse
-from src.core.logging_config import logger
+
+from src.core.config import logger
 from .model import DeliveryDataRequest
 from .service import fetch_delivery_service, add_delivery_service, edit_delivery_service, remove_delivery_service
-from datetime import datetime
 
 router = APIRouter(prefix="/delivery", tags=["Delivery"])
 

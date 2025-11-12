@@ -1,11 +1,12 @@
+from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status, Path, Query
 from fastapi.responses import Response, JSONResponse
-from src.core.logging_config import logger
-from .model import RefuelingDataRequest
+
+from src.core.config import logger
 from src.endpoints.attachment.model import AttachmentDataRequest
-from .service import fetch_refueling_service, add_refueling_service, edit_refueling_service, remove_refueling_service
 from src.endpoints.attachment.service import add_attachment_service
-from datetime import datetime
+from .model import RefuelingDataRequest
+from .service import fetch_refueling_service, add_refueling_service, edit_refueling_service, remove_refueling_service
 
 router = APIRouter(prefix="/refueling", tags=["Refueling"])
 

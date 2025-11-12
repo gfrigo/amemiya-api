@@ -1,7 +1,7 @@
-from src.core.database import start_connection, start_cursor
-from .repository import LoginRepository
 from src.core.config import settings
-from src.core.logging_config import logger
+from src.core.database import start_connection, start_cursor
+from src.core.config import logger
+from .repository import LoginRepository
 
 
 def fetch_login_service(request_data: dict) -> tuple:
@@ -22,7 +22,7 @@ def fetch_login_service(request_data: dict) -> tuple:
                         "table": "Users"}
     }
 
-    with start_connection(settings.DB_HOST, settings.DB_USER, settings.DB_PASSWORD, settings.DB_SCHEMA) as conn:
+    with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
             access, user_data = LoginRepository.fetch(cursor, query_filter)
