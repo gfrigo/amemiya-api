@@ -1,5 +1,3 @@
-from pypika import MySQLQuery, Table, Parameter
-
 from src.core.config import logger
 from src.endpoints import generic_repository
 from .queries import AssembleStatement

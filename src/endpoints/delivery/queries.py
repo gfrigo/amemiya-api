@@ -1,4 +1,3 @@
-from operator import and_
 from pypika import MySQLQuery, Table
 
 from src.endpoints.generic_repository import assemble_condition

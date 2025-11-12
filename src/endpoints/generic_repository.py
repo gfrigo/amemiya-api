@@ -1,9 +1,10 @@
-from pypika import MySQLQuery, Table, Order
-
-from src.core.config import logger
 from functools import reduce
 from operator import and_
+
+from pypika import MySQLQuery, Order
 from pypika import Table
+
+from src.core.config import logger
 
 
 def assemble_individual_condition(label, specs):

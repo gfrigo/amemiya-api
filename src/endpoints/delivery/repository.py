@@ -1,8 +1,5 @@
-from base64 import b64encode
-
 from src.core.config import logger
 from src.endpoints import generic_repository
-from src.endpoints.generic_repository import get_last_entry
 from .queries import AssembleStatement
 
 

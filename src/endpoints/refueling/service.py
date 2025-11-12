@@ -1,6 +1,6 @@
+from src.core.config import logger
 from src.core.config import settings
 from src.core.database import start_connection, start_cursor
-from src.core.config import logger
 from .repository import RefuelingRepository
 
 

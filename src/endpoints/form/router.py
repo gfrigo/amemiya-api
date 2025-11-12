@@ -6,7 +6,7 @@ from fastapi.responses import Response, JSONResponse
 from src.core.config import logger
 from src.endpoints.attachment.model import AttachmentDataRequest
 from src.endpoints.attachment.service import add_attachment_service
-from .model import UserDataRequest
+from .model import FormDataRequest
 from .service import fetch_user_service, add_user_service, edit_user_service, remove_user_service
 
 router = APIRouter(prefix="/user", tags=["User"])
@@ -40,7 +40,7 @@ def fetch_user(
 @router.post("/{company_id}")
 def add_user(
         company_id: int,
-        request: UserDataRequest
+        request: FormDataRequest
     ):
     logger.info("ADD USER ROUTE HIT")
 
@@ -64,7 +64,7 @@ def add_user(
 @router.put("/{user_id}")
 def edit_user(
         user_id: int,
-        request: UserDataRequest
+        request: FormDataRequest
     ):
     logger.info("EDIT USER ROUTE HIT")
 

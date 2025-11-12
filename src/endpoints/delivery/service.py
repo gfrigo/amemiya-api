@@ -1,12 +1,11 @@
 from secrets import token_hex
 
+from src.core.config import logger
 from src.core.config import settings
 from src.core.database import start_connection, start_cursor
-from src.core.config import logger
 from src.core.utils import get_geocode_data
 from src.endpoints import generic_repository
 from src.endpoints.geopoint.repository import GeopointRepository
-from .model import DeliveryDataRequest
 from .repository import DeliveryRepository
 
 
