@@ -12,6 +12,8 @@ class GeopointRepository:
     def fetch(cursor, query_filter: dict) -> dict | None:
         logger.info("FETCH GEOPOINT REPOSITORY HIT")
 
+        request_geopoint_id = query_filter.get("geopoint_id").get("value")
+
         try:
             select_stmt = AssembleStatement.get_geopoint_data(query_filter)
             logger.info(f"To execute: {select_stmt}")
@@ -24,7 +26,6 @@ class GeopointRepository:
             if not result:
                 return None
 
-            routes: dict = {}
             origin_points: list = []
             destiny_points: list = []
             for entry in result:
@@ -60,6 +61,9 @@ class GeopointRepository:
                     "city": city,
                     "district": district
                 }
+
+                if request_geopoint_id:
+                    return geopoint_data
 
                 if geopoint_type == "origin":
                     origin_points.append(geopoint_data)

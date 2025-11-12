@@ -10,6 +10,7 @@ from src.endpoints.geopoint.router import router as geopoint_router
 from src.endpoints.invoice.router import router as invoice_router
 from src.endpoints.maintenance.router import router as maintenance_router
 from src.endpoints.refueling.router import router as refueling_router
+from src.endpoints.delivery.router import router as delivery_router
 
 
 app = FastAPI()
@@ -24,3 +25,4 @@ app.include_router(geopoint_router)
 app.include_router(invoice_router)
 app.include_router(maintenance_router)
 app.include_router(refueling_router)
+app.include_router(delivery_router)

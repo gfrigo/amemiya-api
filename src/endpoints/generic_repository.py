@@ -36,6 +36,24 @@ def get_last_entry(cursor, target_table: str, target_column: str, condition: dic
         print(e)
         return None
 
+def fetch(cursor, target_table: str, target_column: str = None, condition: dict = None):
+    logger.info("FETCH GENERIC REPOSITORY HIT")
+
+    table = Table(target_table)
+
+    if target_column:
+        column = getattr(table, target_column)
+        stmt = MySQLQuery.from_(table).select(column)
+    else:
+        stmt = MySQLQuery.from_(table)
+
+    if condition:
+        stmt = stmt.where(assemble_condition(condition))
+
+    cursor.execute(stmt.get_sql())
+
+    return cursor.fetchall()
+
 def edit(update_data: dict):
     logger.info("EDIT GENERIC REPOSITORY HIT")
 
@@ -53,7 +71,6 @@ def edit(update_data: dict):
     if filter_:
         condition = assemble_condition(filter_)
         stmt = stmt.where(condition)
-
 
     return stmt.get_sql()
 

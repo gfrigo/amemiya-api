@@ -1,32 +1,60 @@
-# pylint: disable-all
 from pypika import MySQLQuery, Table
 from operator import and_
 from src.queries.generic import assemble_condition
 
 
-ROUTES = Table("Routes")
+DELIVERIES = Table("Deliveries")
 COMPANIES = Table("Companies")
-DELIVERY = Table("Delivery")
+USERS = Table("Users")
+VEHICLES = Table("Vehicles")
 
-def get_data(query_filter: dict) -> str:
-    query = (
-        MySQLQuery
-        .from_(DELIVERY)
-        .join(ROUTES)
-        .on(DELIVERY.route_id == ROUTES.route_id)
-        .join(COMPANIES)
-        .on(ROUTES.created_by_company_id == COMPANIES.company_id)
-        .select(
-            DELIVERY.delivery_id,
-            DELIVERY.route_id,
-            DELIVERY.vehicle_id,
-            DELIVERY.start_time,
-            DELIVERY.finish_time,
-            DELIVERY.load_name,
-            ROUTES.address,
-            COMPANIES.company_name
+class AssembleStatement:
+
+    @staticmethod
+    def get_delivery_data(query_filter: dict) -> str:
+        stmt = (
+            MySQLQuery.from_(DELIVERIES).select(
+                DELIVERIES.delivery_id,
+                DELIVERIES.company_id,
+                COMPANIES.company_name,
+                DELIVERIES.user_id,
+                USERS.user_name,
+                DELIVERIES.vehicle_id,
+                VEHICLES.vehicle_name,
+                VEHICLES.license_plate,
+                VEHICLES.brand,
+                VEHICLES.model,
+                VEHICLES.year,
+                DELIVERIES.delivery_code,
+                DELIVERIES.payload_item,
+                DELIVERIES.payload_quantity,
+                DELIVERIES.payload_quantity_unit,
+                DELIVERIES.payload_weight,
+                DELIVERIES.estimated_delivery_time,
+                DELIVERIES.start_time,
+                DELIVERIES.start_label,
+                DELIVERIES.start_latitude,
+                DELIVERIES.start_longitude,
+                DELIVERIES.start_city,
+                DELIVERIES.start_district,
+                DELIVERIES.finish_time,
+                DELIVERIES.end_label,
+                DELIVERIES.end_latitude,
+                DELIVERIES.end_longitude,
+                DELIVERIES.end_city,
+                DELIVERIES.end_district,
+                DELIVERIES.delivery_status
+            )
+            .left_join(COMPANIES).on(DELIVERIES.company_id == COMPANIES.company_id)
+            .left_join(USERS).on(DELIVERIES.user_id == USERS.user_id)
+            .left_join(VEHICLES).on(DELIVERIES.vehicle_id == VEHICLES.vehicle_id)
+            .where(assemble_condition(query_filter))
         )
-        .where(assemble_condition(query_filter))
-    )
 
-    return query.get_sql()
+        return stmt.get_sql()
+
+    @staticmethod
+    def add_delivery(data: dict) -> str:
+        stmt = MySQLQuery.into(DELIVERIES).columns(*data.keys()).insert(*data.values())
+
+        return stmt.get_sql()

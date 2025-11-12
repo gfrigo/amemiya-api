@@ -3,16 +3,17 @@ from src.core.logging_config import logger
 from src.endpoints.generic_repository import get_last_entry
 from src.register import Register
 from base64 import b64encode
+from src.endpoints import generic_repository
 
 
-class RouteRepository:
+class DeliveryRepository:
 
     @staticmethod
-    def fetch(cursor, query_filter: dict) -> dict | None:
+    def fetch(cursor, query_filter: dict) -> dict | list | None:
         logger.info("FETCH DELIVERY REPOSITORY HIT")
 
         try:
-            select_stmt = AssembleStatement.get_attachment_data(query_filter)
+            select_stmt = AssembleStatement.get_delivery_data(query_filter)
             logger.info(f"To execute: {select_stmt}")
 
             cursor.execute(select_stmt)
@@ -23,24 +24,73 @@ class RouteRepository:
             if not result:
                 return None
 
-            data: dict = {}
+            data: list = []
             for entry in result:
-                attachment_id, company_name, user_name, file_data, file_type, attachment_type, upload_date = entry
+                (
+                    delivery_id,
+                    company_id,
+                    company_name,
+                    user_id,
+                    user_name,
+                    vehicle_id,
+                    vehicle_name,
+                    license_plate,
+                    brand,
+                    model,
+                    year,
+                    delivery_code,
+                    payload_item,
+                    payload_quantity,
+                    payload_quantity_unit,
+                    payload_weight,
+                    estimated_delivery_time,
+                    start_time,
+                    start_label,
+                    start_latitude,
+                    start_longitude,
+                    start_city,
+                    start_district,
+                    finish_time,
+                    end_label,
+                    end_latitude,
+                    end_longitude,
+                    end_city,
+                    end_district,
+                    delivery_status
+                ) = entry
 
-                encoded_file_data = b64encode(file_data).decode("utf-8")
-
-                file_name = f"test_output.{file_type}"
-                with open(file_name, "wb") as f:
-                    f.write(file_data)
-
-                data[attachment_id] = {
+                data.append({
+                    "delivery_id": delivery_id,
+                    "company_id": company_id,
                     "company_name": company_name,
+                    "user_id": user_id,
                     "user_name": user_name,
-                    "file_data": encoded_file_data,
-                    "file_type": file_type,
-                    "attachment_type": attachment_type,
-                    "upload_date": upload_date
-                }
+                    "vehicle_id": vehicle_id,
+                    "vehicle_name": vehicle_name,
+                    "license_plate": license_plate,
+                    "brand": brand,
+                    "model": model,
+                    "year": year,
+                    "delivery_code": delivery_code,
+                    "payload_item": payload_item,
+                    "payload_quantity": float(payload_quantity),
+                    "payload_quantity_unit": payload_quantity_unit,
+                    "payload_weight": float(payload_weight),
+                    "estimated_delivery_time": None if estimated_delivery_time is None else str(estimated_delivery_time),
+                    "start_time": None if start_time is None else str(start_time),
+                    "start_label": start_label,
+                    "start_latitude": float(start_latitude),
+                    "start_longitude": float(start_longitude),
+                    "start_city": start_city,
+                    "start_district": start_district,
+                    "finish_time": None if finish_time is None else str(finish_time),
+                    "end_label": end_label,
+                    "end_latitude": float(end_latitude),
+                    "end_longitude": float(end_longitude),
+                    "end_city": end_city,
+                    "end_district": end_district,
+                    "delivery_status": delivery_status
+                })
 
             return data
 
@@ -50,53 +100,11 @@ class RouteRepository:
 
     @staticmethod
     def add(cursor, data: dict):
-        logger.info("ADD ROUTE REPOSITORY HIT")
-        """
-        {
-            'company_id': 123,
-            'user_id': 42,
-            'creation_datetime': '2025-10-31 23:02:41.255466',
-            'subroutes': {
-                1: {
-                    'subroute_type': 'start',
-                    'address': 'A Street',
-                    'longitude': -46.6333,
-                    'latitude': -23.5505
-                },
-                2: {
-                    'subroute_type': 'middle',
-                    'address': 'B Street',
-                    'longitude': -46.62,
-                    'latitude': -23.56
-                },
-                3: {
-                    'subroute_type': 'end',
-                    'address': 'C Street',
-                    'longitude': -46.61,
-                    'latitude': -23.57
-                }
-            }
-        }
-        """
-        last_route_id = get_last_entry(cursor, "Routes", "route_id")
-        if last_route_id is None:
-            route_id = 1
-        else:
-            route_id = last_route_id + 1
-
-        company_id = data['company_id']
-        user_id = data['user_id']
-        creation_datetime = data['creation_datetime']
-        subroutes = data['subroutes']
-
-        values = []
-        print(subroutes)
-        for subroute_id, entry in subroutes.items():
-            values.append((route_id, subroute_id, company_id, user_id, creation_datetime, entry['subroute_type'], entry['address'], entry['longitude'], entry['latitude']))
+        logger.info("ADD DELIVERY REPOSITORY HIT")
 
         try:
 
-            insert_stmt = AssembleStatement.add_route(values)
+            insert_stmt = AssembleStatement.add_delivery(data)
             logger.info(f"To execute: {insert_stmt}")
 
             cursor.execute(insert_stmt)
@@ -109,18 +117,32 @@ class RouteRepository:
         return cursor.lastrowid
 
     @staticmethod
-    def edit(cursor, attachment_id, data: dict):
-        logger.info("EDIT ATTACHMENT REPOSITORY HIT")
+    def edit(cursor, data: dict):
+        logger.info("EDIT REFUELING REPOSITORY HIT")
 
         try:
-            update_stmt = AssembleStatement.edit_attachment(attachment_id, data)
+            update_stmt = generic_repository.edit(data)
             logger.info(f"To execute: {update_stmt}")
 
-            cursor.execute(update_stmt, tuple(v for v in data.values() if v is not None))
+            cursor.execute(update_stmt)
             logger.info("Executed")
 
         except Exception as e:
             print(e)
             return None
+
+    @staticmethod
+    def remove(cursor, data: dict):
+        logger.info("REMOVE REFUELING REPOSITORY HIT")
+
+        try:
+            remove_stmt = generic_repository.remove(data)
+            logger.info(f"To execute: {remove_stmt}")
+
+            cursor.execute(remove_stmt)
+            logger.info("Executed")
+
+        except Exception as e:
+            logger.info("Error during edit:", e)
 
 
