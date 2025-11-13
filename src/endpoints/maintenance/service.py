@@ -109,6 +109,7 @@ def remove_maintenance_service(maintenance_id: int):
 
     with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
+
             maintenance_data: dict = MaintenanceRepository.fetch(cursor, query_filter)
 
             if not maintenance_data:

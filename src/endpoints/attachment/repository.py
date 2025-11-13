@@ -53,7 +53,6 @@ class AttachmentRepository:
         logger.info("ADD ATTACHMENT REPOSITORY HIT")
 
         try:
-
             insert_stmt = AssembleStatement.add_attachment(data)
             logger.info(f"To execute: {insert_stmt}")
 

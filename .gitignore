@@ -4,4 +4,6 @@ src/__pycache__/
 .vscode/
 .idea/
 
+test.py
+
 *.env

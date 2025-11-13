@@ -1,3 +1,4 @@
+from typing import Any
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import logging
@@ -15,12 +16,14 @@ class Settings(BaseSettings):
     DB_PASSWORD: str | None = None
     DB_SCHEMA: str | None = None
 
-    db_credentials = {
-        "host": DB_HOST,
-        "user": DB_USER,
-        "password": DB_PASSWORD,
-        "schema": DB_SCHEMA
-    }
+    @property
+    def db_credentials(self) -> dict[str, Any]:
+        return {
+            "host": self.DB_HOST,
+            "user": self.DB_USER,
+            "password": self.DB_PASSWORD,
+            "schema": self.DB_SCHEMA,
+        }
 
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env")
 

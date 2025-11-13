@@ -12,6 +12,7 @@ from src.endpoints.route.router import router as route_router
 from src.endpoints.server.router import router as server_router
 from src.endpoints.user.router import router as user_router
 from src.endpoints.vehicle.router import router as vehicle_router
+from src.endpoints.form.router import router as form_router
 
 app = FastAPI()
 
@@ -26,3 +27,4 @@ app.include_router(invoice_router)
 app.include_router(maintenance_router)
 app.include_router(refueling_router)
 app.include_router(delivery_router)
+app.include_router(form_router)

@@ -2,6 +2,8 @@ from pydantic import BaseModel
 
 class FormDataRequest(BaseModel):
     form_id: int | None = None
+    company_id: int | None = None
+    user_id: int | None = None
     delivery_id: int | None = None
     description: str | None = None
     was_delivered: bool | None = None

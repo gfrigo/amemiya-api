@@ -107,9 +107,9 @@ class MaintenanceRepository:
             cursor.execute(update_stmt)
             logger.info("Executed")
 
+
         except Exception as e:
-            print(e)
-            return None
+            logger.info("Error during edition:", e)
 
 
     @staticmethod
@@ -124,4 +124,4 @@ class MaintenanceRepository:
             logger.info("Executed")
 
         except Exception as e:
-            logger.info("Error during edit:", e)
+            logger.info("Error during remotion:", e)
