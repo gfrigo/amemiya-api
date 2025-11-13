@@ -1,13 +1,11 @@
 from datetime import datetime
 
-from fastapi import APIRouter, UploadFile, File, Query, Path, Form, HTTPException, status
+from fastapi import APIRouter, Query, Path, HTTPException, status
 from fastapi.responses import Response, JSONResponse
 
 from src.core.config import logger
-from src.endpoints.attachment.model import AttachmentDataRequest
-from src.endpoints.attachment.service import add_attachment_service
 from .model import FormDataRequest
-from .service import fetch_form_service, add_form_service, edit_form_service, remove_user_service
+from .service import fetch_form_service, add_form_service, edit_form_service, remove_form_service
 
 router = APIRouter(prefix="/form", tags=["Form"])
 
@@ -183,7 +181,7 @@ def remove_user(
     request_data = {"form_id": form_id}
 
     try:
-        remove_user_service(request_data)
+        remove_form_service(request_data)
 
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 

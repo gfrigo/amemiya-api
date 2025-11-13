@@ -91,7 +91,7 @@ def edit_form_service(request_data: dict):
 
     return "Form edited successfully"
 
-def remove_user_service(request_data: dict):
+def remove_form_service(request_data: dict):
     logger.info("REMOVE FORM SERVICE HIT")
 
     query_filter = {
