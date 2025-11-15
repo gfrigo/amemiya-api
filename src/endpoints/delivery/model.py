@@ -14,7 +14,7 @@ class DeliveryDataRequest(BaseModel):
     start_geopoint_id: int | None = None
     start_latitude: float | None = None
     start_longitude: float | None = None
-    finish_geopoint_id: int | None = None
+    end_geopoint_id: int | None = None
     end_latitude: float | None = None
     end_longitude: float | None = None
     delivery_status: str | None = None
