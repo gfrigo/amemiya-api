@@ -1,7 +1,7 @@
 from src.core.config import logger
 from src.core.config import settings
 from src.core.database import start_connection, start_cursor
-from src.endpoints.user.repository import FormRepository
+from src.endpoints.form.repository import FormRepository
 
 
 def fetch_form_service(request_data: dict) -> dict | list:

@@ -1,7 +1,7 @@
 from src.core.config import logger
 from src.core.config import settings
 from src.core.database import start_connection, start_cursor
-from src.endpoints.user.repository import FormRepository
+from src.endpoints.user.repository import UserRepository
 
 
 def fetch_user_service(request_data: dict) -> dict | list:
@@ -21,7 +21,7 @@ def fetch_user_service(request_data: dict) -> dict | list:
 
     with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
-            result: dict | list = FormRepository.fetch(cursor, query_filter)
+            result: dict | list = UserRepository.fetch(cursor, query_filter)
 
             return result
 
@@ -33,7 +33,7 @@ def add_user_service(request_data: dict):
     with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
-            user_id: int = FormRepository.add(cursor, request_data)
+            user_id: int = UserRepository.add(cursor, request_data)
 
         conn.commit()
 
@@ -69,12 +69,12 @@ def edit_user_service(request_data: dict):
     with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
-            user_data: dict = FormRepository.fetch(cursor, query_filter)
+            user_data: dict = UserRepository.fetch(cursor, query_filter)
 
             if not user_data:
                 return "user_id has no data"
 
-            FormRepository.edit(cursor, query_data)
+            UserRepository.edit(cursor, query_data)
 
         conn.commit()
 
@@ -99,12 +99,12 @@ def remove_user_service(request_data: dict):
     with start_connection(settings.db_credentials) as conn:
         with start_cursor(conn) as cursor:
 
-            user_data: dict = FormRepository.fetch(cursor, query_filter)
+            user_data: dict = UserRepository.fetch(cursor, query_filter)
 
             if not user_data:
                 return "user_id has no data"
 
-            FormRepository.remove(cursor, query_data)
+            UserRepository.remove(cursor, query_data)
 
         conn.commit()
 

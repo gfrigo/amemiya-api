@@ -5,21 +5,14 @@ from src.endpoints import generic_repository
 from .queries import AssembleStatement
 
 
-class UserRepository:
+class FormRepository:
 
     @staticmethod
     def fetch(cursor, query_filter: dict) -> dict | list | None:
         logger.info("FETCH USER REPOSITORY HIT")
-        request_user_id = query_filter["user_id"]["value"]
 
         try:
-
-            if not request_user_id:
-                select_stmt = AssembleStatement.get_all_users(query_filter)
-
-            else:
-                select_stmt = AssembleStatement.get_user_data(query_filter)
-
+            select_stmt = AssembleStatement.get_form_data(query_filter)
             logger.info(f"To execute: {select_stmt}")
 
             cursor.execute(select_stmt)
@@ -27,52 +20,46 @@ class UserRepository:
 
             result = cursor.fetchall()
 
-            if not request_user_id:
-                users_data: list = []
+            if not result:
+                return None
 
-                users = result
-                for user_entry in users:
-                    user_id, user_name, inner_register, email, telephone, role_id, role_name, company_id, company_name = user_entry
+            data: list = []
+            for entry in result:
+                (
+                    form_id,
+                    company_id,
+                    company_name,
+                    user_id,
+                    user_name,
+                    delivery_id,
+                    delivery_code,
+                    description,
+                    was_delivered,
+                    had_problem,
+                    problem_description,
+                    who_received,
+                    creation_datetime,
+                    notes
+                ) = entry
 
-                    users_data.append({
-                        "user_id": user_id,
-                        "user_name": user_name,
-                        "inner_register": inner_register,
-                        "email": email,
-                        "telephone": telephone,
-                        "role_id": role_id,
-                        "role_name": role_name,
-                        "company_id": company_id,
-                        "company_name": company_name
-                    })
-
-                return users_data
-
-            else:
-                user_data: dict = {}
-
-                user_entry = result[0]
-
-                user_id, user_name, inner_register, email, telephone, role_id, role_name, admin, company_id, company_name, profile_picture_id, profile_picture_data = user_entry
-
-                encoded_picture_data = b64encode(profile_picture_data).decode("utf-8")
-
-                user_data = {
-                    "user_id": user_id,
-                    "user_name": user_name,
-                    "inner_register": inner_register,
-                    "email": email,
-                    "telephone": telephone,
-                    "role_id": role_id,
-                    "role_name": role_name,
-                    "admin": admin == 1,
+                data.append({
+                    "form_id": form_id,
                     "company_id": company_id,
                     "company_name": company_name,
-                    "profile_picture_id": profile_picture_id,
-                    "profile_picture_data": encoded_picture_data
-                }
+                    "user_id": user_id,
+                    "user_name": user_name,
+                    "delivery_id": delivery_id,
+                    "delivery_code": delivery_code,
+                    "description": description,
+                    "was_delivered": was_delivered == 1,
+                    "had_problem": had_problem == 1,
+                    "problem_description": problem_description,
+                    "who_received": who_received,
+                    "creation_datetime": str(creation_datetime),
+                    "notes": notes
+                })
 
-                return user_data
+            return data
 
         except IndexError:
             return None
@@ -83,10 +70,10 @@ class UserRepository:
 
     @staticmethod
     def add(cursor, data: dict):
-        logger.info("ADD USER REPOSITORY HIT")
+        logger.info("ADD FORM REPOSITORY HIT")
 
         try:
-            insert_stmt = AssembleStatement.add_user(tuple(data.keys()), tuple(data.values()))
+            insert_stmt = AssembleStatement.add_form(tuple(data.keys()), tuple(data.values()))
             logger.info(f"To execute: {insert_stmt}")
 
             cursor.execute(insert_stmt)
@@ -100,7 +87,7 @@ class UserRepository:
 
     @staticmethod
     def edit(cursor, data: dict):
-        logger.info("EDIT USER REPOSITORY HIT")
+        logger.info("EDIT FORM REPOSITORY HIT")
 
         try:
             update_stmt = generic_repository.edit(data)
@@ -109,12 +96,13 @@ class UserRepository:
             cursor.execute(update_stmt)
             logger.info("Executed")
 
+
         except Exception as e:
-            logger.info("Error during edit:", e)
+            logger.info("Error during edition:", e)
 
     @staticmethod
     def remove(cursor, data: dict):
-        logger.info("REMOVE USER REPOSITORY HIT")
+        logger.info("REMOVE FORM REPOSITORY HIT")
 
         try:
             remove_stmt = generic_repository.remove(data)
