@@ -87,6 +87,8 @@ async def edit_user(user_id: int, company_id: int = Form(...), file_type: str = 
     logger.info("ADD USER PROFILE PICTURE ROUTE HIT")
 
     file_bytes: bytes = await file.read()
+    if "/" in file_type:
+        _, file_type = file_type.split("/")
 
     attachment_data = AttachmentDataRequest(
         uploaded_by_company_id=company_id,
