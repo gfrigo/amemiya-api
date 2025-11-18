@@ -22,9 +22,10 @@ class LoginRepository:
             if not result:
                 return False, None
 
-            user_id, user_name, inner_register, email, telephone, role_id, role_name, admin, company_id, company_name, profile_picture_id, profile_picture_data = result
+            # result now includes password after email
+            user_id, user_name, inner_register, email, password_hash, telephone, role_id, role_name, admin, company_id, company_name, profile_picture_id, profile_picture_data = result
 
-            encoded_picture_data = b64encode(profile_picture_data).decode("utf-8")
+            encoded_picture_data = b64encode(profile_picture_data).decode("utf-8") if profile_picture_data else None
 
             data = {
                 "user_id": user_id,
@@ -38,7 +39,8 @@ class LoginRepository:
                 "company_id": company_id,
                 "company_name": company_name,
                 "profile_picture_id": profile_picture_id,
-                "profile_picture_data": encoded_picture_data
+                "profile_picture_data": encoded_picture_data,
+                "password_hash": password_hash
             }
 
             return True, data

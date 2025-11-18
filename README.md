@@ -14,6 +14,99 @@ Preencha o arquivo `.env` com os dados de conexão do Banco de Dados:
 Inicie o servidor:
 >     uvicorn main:app --reload
 
+Ou use `docker compose` para levantar ambiente de teste (MySQL + Mosquitto + API + worker):
+
+```
+docker compose up --build
+```
+
+Observações importantes:
+- O endpoint de login agora retorna um token JWT no campo `token` quando autenticado com sucesso. Use esse token para autenticação nas chamadas que venham a exigir um Bearer token.
+- Senhas são armazenadas (ou serão migradas) como hash bcrypt quando possível. Caso a tabela contenha senhas em texto, no primeiro login a senha será re-hashada automaticamente.
+- Para testes MQTT local: há um endpoint de publicação `POST /mqtt/publish?company_id=<id>&device_id=<id>` que publica no tópico `amemiya/{company_id}/device/{device_id}/telemetry`.
+
+Aviso de segurança: o `docker/mosquitto/mosquitto.conf` atual permite conexões anônimas e serve apenas para testes locais. Para produção use o arquivo de template `docker/mosquitto/secure_mosquitto.conf` e siga as instruções para habilitar TLS e autenticação.
+
+Simulador Node.js (dispositivo)
+--------------------------------
+
+Um simulador simples em Node.js foi adicionado em `tools/device_simulator`. O simulador faz o seguinte fluxo:
+
+- Faz `POST /login/` na API com `email` e `password` para obter um JWT.
+- Conecta ao broker MQTT (EMQX) em `mqtt://localhost:1883` usando o JWT como `password` (o plugin `emqx_auth_http` vai validar o token contra `/mqtt/auth`).
+- Publica N mensagens no tópico `amemiya/{company_id}/device/{device_id}/telemetry`.
+
+Como usar o simulador (exemplo):
+
+1. Instalar dependências do simulador (dentro da pasta `amemiya-api`):
+
+```powershell
+cd amemiya-api\tools\device_simulator
+npm install
+```
+
+2. Executar simulador (exemplo):
+
+```powershell
+node index.js --company 1 --device device01 --email teste@example.com --password teste123 --count 10 --interval 500
+```
+
+Parâmetros úteis:
+- `--api`: base URL da API (default `http://localhost:8000`)
+- `--broker`: URL do broker MQTT (default `mqtt://localhost:1883`)
+- `--company`, `--device`, `--email`, `--password` são obrigatórios
+- `--count`: quantas mensagens publicar (default 5)
+- `--interval`: intervalo em ms entre mensagens (default 1000)
+
+Observações de segurança e execução:
+- O EMQX no `docker-compose` está configurado para usar o plugin `emqx_auth_http` e chama `POST http://api:8000/mqtt/auth` para validar tokens. O simulador passa o token obtido como `password` na conexão MQTT.
+- Em ambiente local, as portas expostas no `docker-compose` são: `1883` (MQTT), `8083` (WebSocket) e `18083` (dashboard EMQX). Devem estar livres para serem usadas.
+
+Criação automática da tabela `Telemetry`:
+---------------------------------------
+
+Ao iniciar a API (via `uvicorn` ou via `docker compose up`), o serviço executa uma verificação e cria a tabela `Telemetry` caso ela não exista. A tabela usa tipo `JSON` para o campo `payload` (MySQL 5.7+/8.0+).
+
+DDL usado (apenas para referência):
+
+```sql
+CREATE TABLE IF NOT EXISTS Telemetry (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	company_id INT NULL,
+	device_id VARCHAR(128) NULL,
+	payload JSON,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+Se preferir criar a tabela manualmente, use o DDL acima no seu banco.
+
+Testes automatizados
+---------------------
+
+Para executar os testes unitários criados (autenticação e worker mockado):
+
+1. Instale dependências de teste (dentro de `amemiya-api`):
+
+```powershell
+pip install -r requirements.txt
+```
+
+2. Execute o pytest na pasta `amemiya-api`:
+
+```powershell
+cd amemiya-api
+pytest -q
+```
+
+Os testes usam mocks e não precisam de broker/DB reais para executar.
+
+Script SQL
+----------
+
+Um script SQL para criar a tabela `Telemetry` manualmente foi adicionado em `amemiya-api/sql/create_telemetry_table.sql`.
+
+
 ---
 
 # Referência da API

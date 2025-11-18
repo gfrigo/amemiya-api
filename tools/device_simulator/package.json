@@ -1,0 +1,14 @@
+{
+  "name": "amemiya-device-simulator",
+  "version": "1.0.0",
+  "description": "Device simulator that logs into API, obtains JWT and publishes telemetry to MQTT broker (EMQX).",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "mqtt": "^4.4.0",
+    "node-fetch": "^2.6.7",
+    "yargs": "^17.7.2"
+  }
+}

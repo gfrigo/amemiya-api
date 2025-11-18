@@ -1,13 +1,9 @@
-import logging
-
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import Response, JSONResponse
 
+from src.core.config import logger
 from .model import LoginDataRequest
 from .service import fetch_login_service
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("uvicorn")
 
 router = APIRouter(prefix="/login", tags=["Login"])
 
@@ -23,12 +19,12 @@ def fetch_user(request: LoginDataRequest):
     }
 
     try:
-        access, user_data = fetch_login_service(data)
+        access, user_data, token = fetch_login_service(data)
 
         if not access or not user_data:
             return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-        return JSONResponse(status_code=status.HTTP_200_OK, content={"access": access, "data": user_data})
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"access": access, "data": user_data, "token": token})
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

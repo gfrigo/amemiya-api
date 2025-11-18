@@ -13,8 +13,21 @@ from src.endpoints.server.router import router as server_router
 from src.endpoints.user.router import router as user_router
 from src.endpoints.vehicle.router import router as vehicle_router
 from src.endpoints.form.router import router as form_router
+from src.endpoints.mqtt.router import router as mqtt_router
+from src.endpoints.mqtt_auth.router import router as mqtt_auth_router
+from src.core.migrations import create_telemetry_table
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+def on_startup():
+	# Ensure DB objects required by the services exist
+	try:
+		create_telemetry_table()
+	except Exception:
+		# create_telemetry_table logs errors itself
+		pass
 
 app.include_router(server_router)
 app.include_router(login_router)
@@ -28,3 +41,5 @@ app.include_router(maintenance_router)
 app.include_router(refueling_router)
 app.include_router(delivery_router)
 app.include_router(form_router)
+app.include_router(mqtt_router)
+app.include_router(mqtt_auth_router)

@@ -17,6 +17,7 @@ class AssembleStatement:
                 USERS.user_name,
                 USERS.inner_register,
                 USERS.email,
+                USERS.password,
                 USERS.telephone,
                 USERS.role_id,
                 ROLES.role_name,
