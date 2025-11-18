@@ -10,6 +10,7 @@ router = APIRouter(prefix="/delivery", tags=["Delivery"])
 @router.get("/{company_id}", status_code=status.HTTP_200_OK)
 def fetch_delivery(
         company_id: int = Path(..., description="Unique ID of the company whose deliveries should be retrieved", gt=0),
+        delivery_id: int | None = Query(None, description="Unique delivery ID", gt=0),
         user_id: int | None = Query(None, description="Unique ID of the user whose deliveries are associated to", gt=0),
         vehicle_id: int | None = Query(None, description="Unique ID of the vehicle whose deliveries are associated to", gt=0),
         delivery_code: str | None = Query(None, description="Substring unique Delivery Code to search by"),
@@ -37,6 +38,7 @@ def fetch_delivery(
 
     request_data = {
         "company_id": company_id,
+        "delivery_id": delivery_id,
         "user_id": user_id,
         "vehicle_id": vehicle_id,
         "delivery_code": delivery_code,
