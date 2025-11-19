@@ -191,7 +191,7 @@ def edit_delivery(
 
     request_data = {
         "delivery_id": delivery_id,
-        "delivery_status": "started",
+        "delivery_status": "start",
         "start_time": str(datetime.now())
     }
 
@@ -232,7 +232,7 @@ def edit_delivery(
 
     request_data = {
         "delivery_id": delivery_id,
-        "delivery_status": "finished",
+        "delivery_status": "finish",
         "finish_time": str(datetime.now())
     }
 
