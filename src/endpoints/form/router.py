@@ -108,7 +108,7 @@ def fetch_form(
         500: {"description": "Internal server error"},
     },
 )
-def add_user(
+def add_form(
         company_id: int = Path(..., description="Company ID to associate the form to", gt=0),
         request: FormDataRequest = ...
 ):
@@ -154,7 +154,7 @@ def edit_form(
         form_id: int = Path(..., description="Unique ID of the form to edit", gt=0),
         request: FormDataRequest = ...
     ):
-    logger.info("EDIT USER ROUTE HIT")
+    logger.info("EDIT FORM ROUTE HIT")
 
     request_data = request.model_dump()
     request_data["form_id"] = form_id
@@ -173,10 +173,10 @@ def edit_form(
         raise HTTPException(status_code=500, detail=f"Internal server error {str(e)}")
 
 @router.delete("/{form_id}")
-def remove_user(
+def remove_form(
         form_id: int = Path(..., description="Form ID", gt=0)
 ):
-    logger.info("REMOVE USER ROUTE HIT")
+    logger.info("REMOVE FORM ROUTE HIT")
 
     request_data = {"form_id": form_id}
 

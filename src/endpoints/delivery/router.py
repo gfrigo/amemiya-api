@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Path, Query, HTTPException, status
 from fastapi.responses import Response, JSONResponse
+from datetime import datetime
 
 from src.core.config import logger
 from .model import DeliveryDataRequest
@@ -165,6 +166,88 @@ def edit_delivery(
 
     except Exception as e:
         logger.error(f"Error while editing delivery: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.put(
+"/{delivery_id}/start",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Start a delivery",
+    description=(
+        "Starts an existing delivery in the database. "
+    ),
+    responses={
+        204: {"description": "Delivery successfully updated and started"},
+        400: {"description": "Invalid input or delivery ID"},
+        404: {"description": "Delivery not found"},
+        500: {"description": "Internal server error"},
+    }
+)
+def edit_delivery(
+        delivery_id: int = Path(..., description="Unique ID of the delivery to edit", gt=0)
+):
+    """Passes the 'start delivery' request to the service"""
+    logger.info(f"START DELIVERY ROUTE HIT: {delivery_id}")
+
+    request_data = {
+        "delivery_id": delivery_id,
+        "delivery_status": "started",
+        "start_time": str(datetime.now())
+    }
+
+    try:
+        edit_delivery_service(request_data, type="start")
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    except IndexError as e:
+        return Response(status_code=status.HTTP_404_NOT_FOUND, content=str(e))
+
+    except ValueError as e:
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content=str(e))
+
+    except Exception as e:
+        logger.error(f"Error while starting delivery: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.put(
+"/{delivery_id}/finish",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Finish a delivery",
+    description=(
+        "Finishes an existing delivery in the database. "
+    ),
+    responses={
+        204: {"description": "Delivery successfully updated and finished"},
+        400: {"description": "Invalid input or delivery ID"},
+        404: {"description": "Delivery not found"},
+        500: {"description": "Internal server error"},
+    }
+)
+def edit_delivery(
+        delivery_id: int = Path(..., description="Unique ID of the delivery to edit", gt=0)
+):
+    """Passes the 'finish delivery' request to the service"""
+    logger.info(f"FINISH DELIVERY ROUTE HIT: {delivery_id}")
+
+    request_data = {
+        "delivery_id": delivery_id,
+        "delivery_status": "finished",
+        "finish_time": str(datetime.now())
+    }
+
+    try:
+        edit_delivery_service(request_data, type="finish")
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    except IndexError as e:
+        return Response(status_code=status.HTTP_404_NOT_FOUND, content=str(e))
+
+    except ValueError as e:
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content=str(e))
+
+    except Exception as e:
+        logger.error(f"Error while finishing delivery: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 

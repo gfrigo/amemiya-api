@@ -226,7 +226,7 @@ def add_delivery_service(request_data: dict):
 
     return delivery_id
 
-def edit_delivery_service(request_data: dict):
+def edit_delivery_service(request_data: dict, type: str | None = None):
     logger.info("EDIT DELIVERY SERVICE HIT")
 
     request_data = {k: v for k, v in request_data.items() if v is not None and k != "attachment_id"}
@@ -251,6 +251,24 @@ def edit_delivery_service(request_data: dict):
 
             if not delivery_data:
                 raise IndexError("Delivery ID has no data")
+
+            if type == "start":
+                started_time = delivery_data["start_time"]
+                if started_time:
+                    raise ValueError("Delivery has already been started")
+
+                finished_time = delivery_data["finish_time"]
+                if finished_time:
+                    raise ValueError("Delivery has already been finished")
+
+            if type == "finish":
+                started_time = delivery_data["start_time"]
+                if not started_time:
+                    raise ValueError("Delivery has not been started")
+
+                finished_time = delivery_data["finish_time"]
+                if finished_time:
+                    raise ValueError("Delivery has already been finished")
 
             DeliveryRepository.edit(cursor, query_data)
 
