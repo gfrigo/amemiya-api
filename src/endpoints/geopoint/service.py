@@ -12,8 +12,8 @@ def fetch_geopoint_service(request_data: dict) -> dict:
 
     query_filter = {
         "company_id": {"type": "index",
-                     "value": request_data.get("company_id"),
-                     "table": "Geopoints"}
+                       "value": request_data.get("company_id"),
+                       "table": "Geopoints"}
     }
 
     with start_connection(settings.db_credentials) as conn:
