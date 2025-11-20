@@ -37,7 +37,7 @@ class VehicleRepository:
                     "company_name": company_name,
                     "last_user_id": last_user_id,
                     "last_user_name": user_name,
-                    "last_used": str(last_used),
+                    "last_used": None if last_used is None else str(last_used),
                     "active_vehicle": active_vehicle == 1
                 })
 
