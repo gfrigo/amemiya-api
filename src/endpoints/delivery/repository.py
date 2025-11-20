@@ -115,7 +115,7 @@ class DeliveryRepository:
 
     @staticmethod
     def edit(cursor, data: dict):
-        logger.info("EDIT REFUELING REPOSITORY HIT")
+        logger.info("EDIT DELIVERY REPOSITORY HIT")
 
         try:
             update_stmt = generic_repository.edit(data)
@@ -130,7 +130,7 @@ class DeliveryRepository:
 
     @staticmethod
     def remove(cursor, data: dict):
-        logger.info("REMOVE REFUELING REPOSITORY HIT")
+        logger.info("REMOVE DELIVERY REPOSITORY HIT")
 
         try:
             remove_stmt = generic_repository.remove(data)
