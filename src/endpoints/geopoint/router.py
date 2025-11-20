@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Path
+from fastapi import APIRouter, HTTPException, status, Path, Query
 from fastapi.responses import Response, JSONResponse
 
 from src.core.config import logger
@@ -55,11 +55,13 @@ router = APIRouter(prefix="/geopoint", tags=["Geopoint"])
 )
 def fetch_geopoint(
     company_id: int = Path(..., description="Unique ID of the company whose geopoints should be retrieved", gt=0),
+    geopoint_id: int | None = Query(None, description="Unique ID of the geopoint to retrieve", gt=0),
 ):
     logger.info("FETCH GEOPOINT ROUTE HIT")
 
     request_data = {
-        "company_id": company_id
+        "company_id": company_id,
+        "geopoint_id": geopoint_id
     }
 
     try:

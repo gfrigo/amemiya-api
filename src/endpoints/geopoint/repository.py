@@ -10,10 +10,7 @@ class GeopointRepository:
     def fetch(cursor, query_filter: dict) -> dict | None:
         logger.info("FETCH GEOPOINT REPOSITORY HIT")
 
-        request_geopoint_id = query_filter.get("geopoint_id")
-
-        if request_geopoint_id:
-            request_geopoint_id = request_geopoint_id.get("value")
+        request_geopoint_id = query_filter.get("geopoint_id").get("value")
 
         try:
             select_stmt = AssembleStatement.get_geopoint_data(query_filter)
