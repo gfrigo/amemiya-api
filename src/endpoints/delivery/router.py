@@ -188,7 +188,7 @@ def edit_delivery(
         500: {"description": "Internal server error"},
     }
 )
-def edit_delivery(
+def start_delivery(
         delivery_id: int = Path(..., description="Unique ID of the delivery to edit", gt=0)
 ):
     """Passes the 'start delivery' request to the service"""
@@ -247,7 +247,7 @@ def edit_delivery(
         500: {"description": "Internal server error"},
     }
 )
-def edit_delivery(
+def finish_delivery(
         delivery_id: int = Path(..., description="Unique ID of the delivery to edit", gt=0)
 ):
     """Passes the 'finish delivery' request to the service"""
