@@ -5,6 +5,7 @@ from datetime import datetime
 from src.core.config import logger
 from .model import DeliveryDataRequest
 from .service import fetch_delivery_service, add_delivery_service, edit_delivery_service, remove_delivery_service
+from src.endpoints.vehicle.service import edit_vehicle_service
 
 router = APIRouter(prefix="/delivery", tags=["Delivery"])
 
@@ -66,6 +67,9 @@ def fetch_delivery(
 
     try:
         deliveries_data: list = fetch_delivery_service(request_data)
+
+        if not deliveries_data:
+            return Response(status_code=status.HTTP_204_NO_CONTENT)
 
         return JSONResponse(status_code=status.HTTP_200_OK, content={"data": deliveries_data})
 
@@ -156,6 +160,7 @@ def edit_delivery(
 
     try:
         edit_delivery_service(request_data)
+
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     except IndexError as e:
@@ -189,14 +194,32 @@ def edit_delivery(
     """Passes the 'start delivery' request to the service"""
     logger.info(f"START DELIVERY ROUTE HIT: {delivery_id}")
 
+    now = str(datetime.now())
+
     request_data = {
         "delivery_id": delivery_id,
-        "delivery_status": "start",
-        "start_time": str(datetime.now())
+        "delivery_status": "started",
+        "start_time": now
     }
 
     try:
         edit_delivery_service(request_data, type="start")
+
+        delivery_data = fetch_delivery_service({"delivery_id": delivery_id})[0]
+
+        delivery_company_id = delivery_data.get("company_id")
+        delivery_user_id = delivery_data.get("user_id")
+        delivery_vehicle_id = delivery_data.get("vehicle_id")
+
+        edit_vehicle_data = {
+            "company_id": delivery_company_id,
+            "vehicle_id": delivery_vehicle_id,
+            "last_used": now,
+            "last_user_id": delivery_user_id
+        }
+
+        edit_vehicle_service(edit_vehicle_data)
+
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     except IndexError as e:
@@ -230,14 +253,32 @@ def edit_delivery(
     """Passes the 'finish delivery' request to the service"""
     logger.info(f"FINISH DELIVERY ROUTE HIT: {delivery_id}")
 
+    now = str(datetime.now())
+
     request_data = {
         "delivery_id": delivery_id,
-        "delivery_status": "finish",
-        "finish_time": str(datetime.now())
+        "delivery_status": "finished",
+        "finish_time": now
     }
 
     try:
         edit_delivery_service(request_data, type="finish")
+
+        delivery_data = fetch_delivery_service({"delivery_id": delivery_id})[0]
+
+        delivery_company_id = delivery_data.get("company_id")
+        delivery_user_id = delivery_data.get("user_id")
+        delivery_vehicle_id = delivery_data.get("vehicle_id")
+
+        edit_vehicle_data = {
+            "company_id": delivery_company_id,
+            "vehicle_id": delivery_vehicle_id,
+            "last_used": now,
+            "last_user_id": delivery_user_id
+        }
+
+        edit_vehicle_service(edit_vehicle_data)
+
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     except IndexError as e:

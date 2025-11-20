@@ -252,6 +252,8 @@ def edit_delivery_service(request_data: dict, type: str | None = None):
             if not delivery_data:
                 raise IndexError("Delivery ID has no data")
 
+            delivery_data = delivery_data[0]
+
             if type == "start":
                 started_time = delivery_data["start_time"]
                 if started_time:
